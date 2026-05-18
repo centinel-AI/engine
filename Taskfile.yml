@@ -137,6 +137,29 @@ tasks:
     cmds:
       - bash scripts/sync-workspace-data.sh oci '{{.PROJECT}}'
 
+  "workspace:ovh":
+    desc: "Populate workspace for OVH with Terraform (shorthand for workspace:ovh:terraform)"
+    cmds:
+      - task: _workspace
+        vars: { CLOUD: ovh, ENGINE: terraform, PROJECT: "{{.PROJECT}}" }
+
+  "workspace:ovh:terraform":
+    desc: "Populate workspace for OVH; .iac_engine_bin = terraform"
+    cmds:
+      - task: _workspace
+        vars: { CLOUD: ovh, ENGINE: terraform, PROJECT: "{{.PROJECT}}" }
+
+  "workspace:ovh:opentofu":
+    desc: "Populate workspace for OVH; .iac_engine_bin = tofu (OpenTofu)"
+    cmds:
+      - task: _workspace
+        vars: { CLOUD: ovh, ENGINE: opentofu, PROJECT: "{{.PROJECT}}" }
+
+  "workspace:ovh:data":
+    desc: "Copy data/ovh/<PROJECT>/ → workspace/data/ without re-populating providers"
+    cmds:
+      - bash scripts/sync-workspace-data.sh ovh '{{.PROJECT}}'
+
   # --- clean ---
 
   clean:
@@ -218,6 +241,24 @@ tasks:
       - task: _run
         vars: { CLOUD: oci, ENGINE: opentofu, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
 
+  "run:ovh":
+    desc: "Run engine-ovh-terraform (shorthand for run:ovh:terraform). PROJECT=<name> overrides project. Append -- terraform plan|apply|destroy etc."
+    cmds:
+      - task: _run
+        vars: { CLOUD: ovh, ENGINE: terraform, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
+
+  "run:ovh:terraform":
+    desc: "Run engine-ovh-terraform. PROJECT=<name> overrides project. Append -- terraform plan|apply|destroy etc."
+    cmds:
+      - task: _run
+        vars: { CLOUD: ovh, ENGINE: terraform, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
+
+  "run:ovh:opentofu":
+    desc: "Run engine-ovh-opentofu. PROJECT=<name> overrides project. Append -- tofu plan|apply|destroy etc."
+    cmds:
+      - task: _run
+        vars: { CLOUD: ovh, ENGINE: opentofu, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
+
   # --- build ---
 
   "build:azure:terraform":
@@ -268,8 +309,20 @@ tasks:
       - task: _build:one
         vars: { CLOUD: oci, ENGINE: opentofu }
 
+  "build:ovh:terraform":
+    desc: "Build Docker image — OVH, Terraform (run task generate:ovh first)"
+    cmds:
+      - task: _build:one
+        vars: { CLOUD: ovh, ENGINE: terraform }
+
+  "build:ovh:opentofu":
+    desc: "Build Docker image — OVH, OpenTofu (run task generate:ovh first)"
+    cmds:
+      - task: _build:one
+        vars: { CLOUD: ovh, ENGINE: opentofu }
+
   "build:all":
-    desc: "Generate all providers then build all eight Docker images in parallel"
+    desc: "Generate all providers then build all ten Docker images in parallel"
     cmds:
       - task: generate:all
       - task: _build:images
@@ -285,6 +338,8 @@ tasks:
         printf '  %-9s %-12s %-28s\n' "gcp"   "opentofu"  "grauss-gcp-opentofu"
         printf '  %-9s %-12s %-28s\n' "oci"   "terraform" "grauss-oci-terraform"
         printf '  %-9s %-12s %-28s\n' "oci"   "opentofu"  "grauss-oci-opentofu"
+        printf '  %-9s %-12s %-28s\n' "ovh"   "terraform" "grauss-ovh-terraform"
+        printf '  %-9s %-12s %-28s\n' "ovh"   "opentofu"  "grauss-ovh-opentofu"
         echo "  ─────────────────────────────────────────────────────"
         echo ""
 
@@ -299,6 +354,8 @@ tasks:
       - task: "build:gcp:opentofu"
       - task: "build:oci:terraform"
       - task: "build:oci:opentofu"
+      - task: "build:ovh:terraform"
+      - task: "build:ovh:opentofu"
 
   # --- generate ---
 
@@ -338,6 +395,15 @@ tasks:
         printf '\n  %-12s oracle/oci\n'       "Provider:"
         printf '  %-12s providers/oci/\n\n'  "Output:"
 
+  "generate:ovh":
+    desc: Regenerate providers/ovh/*.tf from the pinned OVH + AWS (S3) provider schemas
+    deps: [env:init]
+    cmds:
+      - bash scripts/generate-resources.sh ovh
+      - |
+        printf '\n  %-12s ovh/ovh + hashicorp/aws (S3 for Object Storage)\n' "Providers:"
+        printf '  %-12s providers/ovh/\n\n'                                  "Output:"
+
   "generate:all":
     desc: Regenerate all clouds' providers/<cloud>/*.tf from pinned schemas
     deps:
@@ -345,6 +411,7 @@ tasks:
       - task: "generate:aws"
       - task: "generate:gcp"
       - task: "generate:oci"
+      - task: "generate:ovh"
     cmds:
       - |
         echo ""
@@ -354,6 +421,7 @@ tasks:
         printf '  %-9s %-42s %-18s\n' "aws"   "hashicorp/aws"                         "providers/aws/"
         printf '  %-9s %-42s %-18s\n' "gcp"   "hashicorp/google"                      "providers/gcp/"
         printf '  %-9s %-42s %-18s\n' "oci"   "oracle/oci"                            "providers/oci/"
+        printf '  %-9s %-42s %-18s\n' "ovh"   "ovh/ovh + hashicorp/aws (S3)"          "providers/ovh/"
         echo "  ─────────────────────────────────────────────────────────────────────"
         echo ""
 
@@ -381,6 +449,12 @@ tasks:
       - task: _generate:fixtures
         vars: { CLOUD: oci }
 
+  "generate:fixtures:ovh":
+    desc: "Generate minimal test fixtures for every OVH resource type into data/ovh/_test-all/ (requires schema from generate:ovh)"
+    cmds:
+      - task: _generate:fixtures
+        vars: { CLOUD: ovh }
+
   "generate:fixtures:all":
     desc: Generate fixtures for all clouds
     deps:
@@ -388,6 +462,7 @@ tasks:
       - task: "generate:fixtures:aws"
       - task: "generate:fixtures:gcp"
       - task: "generate:fixtures:oci"
+      - task: "generate:fixtures:ovh"
 
   # --- test ---
   #
@@ -417,6 +492,12 @@ tasks:
     cmds:
       - bash scripts/run-terratest.sh oci exhaustive
 
+  "test:plan:ovh":
+    desc: "Terratest plan tests for every OVH resource type (skips if ENGINE_OVH_* not set)"
+    deps: [env:init, "generate:fixtures:ovh"]
+    cmds:
+      - bash scripts/run-terratest.sh ovh exhaustive
+
   "test:plan:all":
     desc: Terratest plan tests for every resource type across all clouds
     deps:
@@ -424,3 +505,4 @@ tasks:
       - task: "test:plan:aws"
       - task: "test:plan:gcp"
       - task: "test:plan:oci"
+      - task: "test:plan:ovh"

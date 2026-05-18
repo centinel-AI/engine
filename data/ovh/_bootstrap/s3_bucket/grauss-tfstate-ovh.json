@@ -1,0 +1,8 @@
+{
+  "bucket": "grauss-tfstate-ovh",
+  "force_destroy": false,
+  "tags": {
+    "Project": "grauss",
+    "ManagedBy": "terraform"
+  }
+}

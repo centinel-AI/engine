@@ -14,6 +14,8 @@ providers/gcp/*
 !providers/gcp/.gitkeep
 providers/oci/*
 !providers/oci/.gitkeep
+providers/ovh/*
+!providers/ovh/.gitkeep
 
 # Codegen cache (terraform init + schema dump)
 tmp/

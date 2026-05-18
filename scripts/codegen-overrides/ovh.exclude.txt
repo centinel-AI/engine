@@ -1,0 +1,5 @@
+# Resources excluded from codegen for ovh/ovh.
+#
+# Add one resource type per line (without the ovh_ prefix) to skip generation.
+# Blank lines and lines starting with # are ignored.
+# No exclusions known at the pinned version.

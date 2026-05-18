@@ -16,7 +16,8 @@ data/
 │   └── messaging/
 ├── azure/   (same structure)
 ├── gcp/     (same structure)
-└── oci/     (same structure)
+├── oci/     (same structure)
+└── ovh/     (same structure)
 ```
 
 Inside each project, subdirectories map to Terraform resource types (after stripping the provider prefix):
@@ -51,6 +52,7 @@ The `_bootstrap` project provisions the backend infrastructure for Terraform rem
 | Azure | `resource_group`, `storage_account`, `storage_container` |
 | GCP   | `storage_bucket` (`grauss-tfstate-bootstrap`, region EU) |
 | OCI   | `identity_compartment` |
+| OVH   | `cloud_project_user` (objectstore_operator role) → `cloud_project_user_s3_credential` (S3 keys) → `s3_bucket` (`grauss-tfstate-ovh`) via the S3-compatible OVH Object Storage endpoint. Two-phase apply required: first apply provisions user + credential; set `ENGINE_OVH_S3_ACCESS_KEY`/`ENGINE_OVH_S3_SECRET_KEY` from the output, then second apply creates the bucket. |
 
 After applying `_bootstrap`, update `backend.tf.json` in each project to point to the created bucket/container.
 
@@ -75,6 +77,7 @@ Foundational network layer. Establishes the VPC/VNet, subnets, internet gateway,
 | Azure | `resource_group`, `virtual_network`, `subnet` ×2 (public, private), `network_security_group` |
 | GCP | `compute_network`, `compute_subnetwork`, `compute_firewall` ×2 (allow-internal, allow-ssh) |
 | OCI | `identity_compartment`, `core_vcn`, `core_internet_gateway`, `core_route_table`, `core_security_list`, `core_subnet` ×2 (public, private) |
+| OVH | `cloud_project_network_private` (VLAN 100), `cloud_project_network_private_subnet` ×2 (public, private) |
 
 CIDR block: `10.0.0.0/16`
 
@@ -90,6 +93,7 @@ Minimal single-VM deployment with a public IP. Useful as a jump host or to verif
 | Azure | `resource_group`, `virtual_network`, `subnet`, `public_ip`, `network_interface`, `linux_virtual_machine` (Standard_B1s) |
 | GCP | `compute_network`, `compute_subnetwork`, `compute_firewall` (SSH), `compute_address` (EXTERNAL), `compute_instance` (e2-micro) |
 | OCI | `identity_compartment`, `core_vcn`, `core_internet_gateway`, `core_route_table`, `core_security_list`, `core_subnet`, `core_instance` (VM.Standard.E2.1.Micro) |
+| OVH | `cloud_project_network_private` (VLAN 101), `cloud_project_network_private_subnet`, `cloud_project_instance` (b2-7, Ubuntu 22.04) |
 
 CIDR block: `10.1.0.0/16`
 
@@ -105,6 +109,7 @@ Three-tier web application: load balancer → application VM → managed Postgre
 | Azure | `resource_group`, `virtual_network`, `subnet` ×2 (app, db with PostgreSQL delegation), `network_security_group`, `public_ip`, `network_interface`, `linux_virtual_machine` (Standard_B1s), `postgresql_flexible_server` (Standard_B1ms, PostgreSQL 16) |
 | GCP | `compute_network`, `compute_subnetwork`, `compute_firewall` ×2 (http, ssh), `compute_instance` (e2-micro), `sql_database_instance` (db-f1-micro, POSTGRES_16) |
 | OCI | `identity_compartment`, `core_vcn`, `core_internet_gateway`, `core_route_table`, `core_security_list` (ports 22/80/443), `core_subnet`, `core_instance` (VM.Standard.E2.1.Micro), `database_autonomous_database` (OLTP, free tier) |
+| OVH | `cloud_project_network_private` (VLAN 102), `cloud_project_network_private_subnet`, `cloud_project_instance` (b2-7), `cloud_project_database` (PostgreSQL 16, essential/db1-4) |
 
 CIDR block: `10.2.0.0/16`
 
@@ -120,6 +125,7 @@ Managed Kubernetes cluster with a single node pool. One node, minimum viable con
 | Azure | `resource_group`, `kubernetes_cluster` (AKS v1.31, Standard_B2s node, 1 node, Free SKU tier, SystemAssigned identity) |
 | GCP | `compute_network`, `compute_subnetwork`, `container_cluster` (GKE, `remove_default_node_pool = true`), `container_node_pool` (e2-small, 1 node) |
 | OCI | `identity_compartment`, `core_vcn`, `core_internet_gateway`, `core_route_table`, `core_security_list` (port 6443), `core_subnet`, `containerengine_cluster` (OKE v1.31.1), `containerengine_node_pool` (VM.Standard.E2.1.Micro, 1 node) |
+| OVH | `cloud_project_network_private` (VLAN 103), `cloud_project_network_private_subnet`, `cloud_project_kube` (MKS v1.31, GRA9), `cloud_project_kube_nodepool` (b2-7, 1 node) |
 
 CIDR block: `10.3.0.0/16`
 
@@ -137,6 +143,7 @@ Object storage for raw and processed data layers plus a managed database or data
 | Azure | `resource_group`, `storage_account` (StorageV2, HNS enabled = Data Lake Gen2), `postgresql_flexible_server` (Standard_B1ms, PostgreSQL 16) |
 | GCP | `storage_bucket` ×3 (raw, processed — EU multi-region), `bigquery_dataset` (EU), `sql_database_instance` (db-f1-micro, POSTGRES_16) |
 | OCI | `identity_compartment`, `objectstorage_bucket` ×2 (raw, processed), `database_autonomous_database` (DW workload, free tier) |
+| OVH | `cloud_project_database` (PostgreSQL 16, essential/db1-4) — additional `s3_bucket` resources can be added via the same `s3_bucket` data directory (uses the aws provider configured for OVH S3 endpoint; requires `ENGINE_OVH_S3_*` credentials) |
 
 CIDR block: `10.4.0.0/16` (AWS only — other clouds have no VPC in this architecture)
 
@@ -152,6 +159,7 @@ Asynchronous message queue / pub-sub service. No VPC or networking resources —
 | Azure | `resource_group`, `servicebus_namespace` (Basic SKU), `servicebus_queue` |
 | GCP | `pubsub_topic`, `pubsub_subscription` (30s ack deadline, 8h message retention) |
 | OCI | `identity_compartment`, `streaming_stream_pool`, `streaming_stream` (1 partition, 24h retention) |
+| OVH | `cloud_project_database` (Kafka 3.7, business/db2-7, 3 nodes) — OVH Managed Kafka via the managed database service |
 
 ---
 

@@ -10,8 +10,9 @@ Terraform / OpenTofu engine packaged as Docker images — one per cloud × engin
 | AWS     | `engine-aws-terraform`   | `engine-aws-opentofu`   |
 | GCP     | `engine-gcp-terraform`   | `engine-gcp-opentofu`   |
 | OCI     | `engine-oci-terraform`   | `engine-oci-opentofu`   |
+| OVH     | `engine-ovh-terraform`   | `engine-ovh-opentofu`   |
 
-Azure covers AzureRM + AzureAD as a single stack.
+Azure covers AzureRM + AzureAD as a single stack. OVH bundles ovh/ovh + hashicorp/aws (configured for OVH S3-compatible Object Storage) for state backend support.
 
 ## How it works
 
@@ -45,6 +46,7 @@ compose.yml                 eight pre-configured services
 | hashicorp/google | 7.32.0 | [registry.terraform.io](https://registry.terraform.io/providers/hashicorp/google/latest) |
 | hashicorp/aws | 6.44.0 | [registry.terraform.io](https://registry.terraform.io/providers/hashicorp/aws/latest) |
 | oracle/oci | 8.13.0 | [registry.terraform.io](https://registry.terraform.io/providers/oracle/oci/latest) |
+| ovh/ovh | 2.13.1 | [registry.terraform.io](https://registry.terraform.io/providers/ovh/ovh/latest) |
 
 Pins live in `.env.example`. Update a pin → `task generate:<cloud>` → rebuild image.
 
@@ -64,7 +66,7 @@ Pins live in `.env.example`. Update a pin → `task generate:<cloud>` → rebuil
 task env:init
 
 # 2. Generate provider templates
-task generate:azure    # or: aws | gcp | oci | all
+task generate:azure    # or: aws | gcp | oci | ovh | all
 
 # 3. Build images
 task build:azure:terraform

@@ -1,0 +1,8 @@
+{
+  "name": "nodepool-grauss-kubernetes",
+  "kube_id": "REPLACE_WITH_KUBE_ID",
+  "flavor_name": "b2-7",
+  "desired_nodes": 1,
+  "max_nodes": 1,
+  "min_nodes": 1
+}

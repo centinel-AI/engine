@@ -4,9 +4,9 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-PROVIDER="${1:?usage: populate-workspace.sh <azure|aws|gcp|oci> [PROJECT]}"
-case "$PROVIDER" in azure|aws|gcp|oci) ;; *)
-  echo "populate-workspace.sh: provider must be azure, aws, gcp, or oci" >&2
+PROVIDER="${1:?usage: populate-workspace.sh <azure|aws|gcp|oci|ovh> [PROJECT]}"
+case "$PROVIDER" in azure|aws|gcp|oci|ovh) ;; *)
+  echo "populate-workspace.sh: provider must be azure, aws, gcp, oci, or ovh" >&2
   exit 1
   ;;
 esac

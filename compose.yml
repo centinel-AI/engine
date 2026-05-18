@@ -1,4 +1,4 @@
-# Grauss engine — eight images (azure | aws | gcp | oci × terraform | opentofu).
+# Grauss engine — ten images (azure | aws | gcp | oci | ovh × terraform | opentofu).
 # Provider registries: .cursor/rules/grauss-providers-and-clouds.mdc.
 # Extension fields (x-*) are Compose-ignored anchors for reuse; see https://docs.docker.com/compose/compose-file/11-extension/
 #
@@ -18,6 +18,7 @@ x-build-args-common: &build_args_common
   GOOGLE_PROVIDER_VERSION: ${ENGINE_GOOGLE_PROVIDER_VERSION:-=7.32.0}
   AWS_PROVIDER_VERSION: ${ENGINE_AWS_PROVIDER_VERSION:-=6.44.0}
   OCI_PROVIDER_VERSION: ${ENGINE_OCI_PROVIDER_VERSION:-=8.13.0}
+  OVH_PROVIDER_VERSION: ${ENGINE_OVH_PROVIDER_VERSION:-=2.13.1}
   TERRAFORM_REQUIRED_VERSION: =${ENGINE_TERRAFORM_VERSION:-1.15.3}
   OPENTOFU_REQUIRED_VERSION: =${ENGINE_OPENTOFU_VERSION:-1.11.7}
 
@@ -44,6 +45,20 @@ x-env-aws: &env_aws
   AWS_DEFAULT_REGION: ${ENGINE_AWS_DEFAULT_REGION:-}
   AWS_REGION: ${ENGINE_AWS_REGION:-${ENGINE_AWS_DEFAULT_REGION:-}}
   TF_VAR_project: ${ENGINE_TF_VAR_project:-}
+
+# OVH auth: application key + secret + consumer key — see https://api.ovh.com/createToken
+# OVH S3 (TF_VAR_ovh_s3_*) are passed to the aws provider configured for OVH Object Storage endpoint.
+x-env-ovh: &env_ovh
+  TF_VAR_project: ${ENGINE_TF_VAR_project:-}
+  OVH_ENDPOINT: ${ENGINE_OVH_ENDPOINT:-ovh-eu}
+  OVH_APPLICATION_KEY: ${ENGINE_OVH_APPLICATION_KEY:-}
+  OVH_APPLICATION_SECRET: ${ENGINE_OVH_APPLICATION_SECRET:-}
+  OVH_CONSUMER_KEY: ${ENGINE_OVH_CONSUMER_KEY:-}
+  TF_VAR_ovh_service_name: ${ENGINE_OVH_SERVICE_NAME:-}
+  TF_VAR_ovh_s3_region: ${ENGINE_OVH_S3_REGION:-gra}
+  TF_VAR_ovh_s3_endpoint: ${ENGINE_OVH_S3_ENDPOINT:-https://s3.gra.io.cloud.ovh.net}
+  TF_VAR_ovh_s3_access_key: ${ENGINE_OVH_S3_ACCESS_KEY:-}
+  TF_VAR_ovh_s3_secret_key: ${ENGINE_OVH_S3_SECRET_KEY:-}
 
 # OCI auth: config file profile and/or API signing keys — see https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm
 x-env-oci: &env_oci
@@ -168,6 +183,32 @@ services:
         ENGINE: opentofu
     hostname: engine-oci-opentofu
     environment: *env_oci
+
+  engine-ovh-terraform:
+    <<: *engine_runtime
+    image: grauss-ovh-terraform
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        <<: *build_args_common
+        CLOUD_PROVIDER: ovh
+        ENGINE: terraform
+    hostname: engine-ovh-terraform
+    environment: *env_ovh
+
+  engine-ovh-opentofu:
+    <<: *engine_runtime
+    image: grauss-ovh-opentofu
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        <<: *build_args_common
+        CLOUD_PROVIDER: ovh
+        ENGINE: opentofu
+    hostname: engine-ovh-opentofu
+    environment: *env_ovh
 
 networks:
   engine-network:

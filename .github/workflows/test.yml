@@ -14,6 +14,7 @@ on:
           - aws
           - gcp
           - oci
+          - ovh
 
 jobs:
   setup:
@@ -27,7 +28,7 @@ jobs:
         run: |
           CLOUD="${{ inputs.cloud }}"
           [ "$CLOUD" = "all" ] \
-            && VALUE='["azure","aws","gcp","oci"]' \
+            && VALUE='["azure","aws","gcp","oci","ovh"]' \
             || VALUE='["'"$CLOUD"'"]'
           echo "value={\"cloud\":$VALUE}" >> "$GITHUB_OUTPUT"
 
@@ -53,6 +54,13 @@ jobs:
       ENGINE_OCI_USER_OCID:         ${{ secrets.ENGINE_OCI_USER_OCID }}
       ENGINE_OCI_FINGERPRINT:       ${{ secrets.ENGINE_OCI_FINGERPRINT }}
       ENGINE_OCI_PRIVATE_KEY_FILE:  ${{ secrets.ENGINE_OCI_PRIVATE_KEY_FILE }}
+      ENGINE_OVH_ENDPOINT:            ${{ secrets.ENGINE_OVH_ENDPOINT }}
+      ENGINE_OVH_APPLICATION_KEY:     ${{ secrets.ENGINE_OVH_APPLICATION_KEY }}
+      ENGINE_OVH_APPLICATION_SECRET:  ${{ secrets.ENGINE_OVH_APPLICATION_SECRET }}
+      ENGINE_OVH_CONSUMER_KEY:        ${{ secrets.ENGINE_OVH_CONSUMER_KEY }}
+      ENGINE_OVH_SERVICE_NAME:        ${{ secrets.ENGINE_OVH_SERVICE_NAME }}
+      ENGINE_OVH_S3_ACCESS_KEY:       ${{ secrets.ENGINE_OVH_S3_ACCESS_KEY }}
+      ENGINE_OVH_S3_SECRET_KEY:       ${{ secrets.ENGINE_OVH_S3_SECRET_KEY }}
 
     steps:
       - uses: actions/checkout@v6

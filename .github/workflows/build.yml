@@ -14,6 +14,7 @@ on:
           - aws
           - gcp
           - oci
+          - ovh
       engine:
         description: "Engine"
         required: true
@@ -44,7 +45,7 @@ jobs:
         run: |
           CLOUD="${{ inputs.cloud || 'all' }}"
           ENGINE="${{ inputs.engine || 'all' }}"
-          [ "$CLOUD"  = "all" ] && CLOUDS='["azure","aws","gcp","oci"]' || CLOUDS='["'"$CLOUD"'"]'
+          [ "$CLOUD"  = "all" ] && CLOUDS='["azure","aws","gcp","oci","ovh"]' || CLOUDS='["'"$CLOUD"'"]'
           [ "$ENGINE" = "all" ] && ENGINES='["terraform","opentofu"]'   || ENGINES='["'"$ENGINE"'"]'
           echo "value={\"cloud\":$CLOUDS,\"engine\":$ENGINES}" >> "$GITHUB_OUTPUT"
 
@@ -89,6 +90,7 @@ jobs:
           echo "google=$(val ENGINE_GOOGLE_PROVIDER_VERSION)"     >> "$GITHUB_OUTPUT"
           echo "aws=$(val ENGINE_AWS_PROVIDER_VERSION)"           >> "$GITHUB_OUTPUT"
           echo "oci=$(val ENGINE_OCI_PROVIDER_VERSION)"           >> "$GITHUB_OUTPUT"
+          echo "ovh=$(val ENGINE_OVH_PROVIDER_VERSION)"           >> "$GITHUB_OUTPUT"
           echo "terraform_required==$TF"                          >> "$GITHUB_OUTPUT"
           echo "opentofu_required==$OT"                           >> "$GITHUB_OUTPUT"
 
@@ -159,6 +161,7 @@ jobs:
             GOOGLE_PROVIDER_VERSION=${{ steps.pins.outputs.google }}
             AWS_PROVIDER_VERSION=${{ steps.pins.outputs.aws }}
             OCI_PROVIDER_VERSION=${{ steps.pins.outputs.oci }}
+            OVH_PROVIDER_VERSION=${{ steps.pins.outputs.ovh }}
             TERRAFORM_REQUIRED_VERSION=${{ steps.pins.outputs.terraform_required }}
             OPENTOFU_REQUIRED_VERSION=${{ steps.pins.outputs.opentofu_required }}
           cache-from: type=gha,scope=build-${{ matrix.cloud }}-${{ matrix.engine }}

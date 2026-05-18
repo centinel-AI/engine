@@ -4,7 +4,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
-for cloud in aws azure gcp oci; do
+for cloud in aws azure gcp oci ovh; do
   dir="$ROOT/providers/$cloud"
   mkdir -p "$dir"
   find "$dir" -mindepth 1 -maxdepth 1 ! -name '.gitkeep' -exec rm -rf {} +
@@ -19,4 +19,4 @@ fi
 
 rm -rf "$ROOT/tmp"
 
-echo "clean: providers/{aws,azure,gcp,oci} and workspace/ reset to .gitkeep; data/*/_test-all/ and tmp/ removed."
+echo "clean: providers/{aws,azure,gcp,oci,ovh} and workspace/ reset to .gitkeep; data/*/_test-all/ and tmp/ removed."

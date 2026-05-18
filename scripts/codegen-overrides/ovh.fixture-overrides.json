@@ -1,0 +1,14 @@
+{
+  "service_name": "REPLACE_WITH_SERVICE_NAME",
+  "region": "GRA9",
+  "vlan_id": 100,
+  "start": "10.0.1.1",
+  "end": "10.0.1.254",
+  "network": "10.0.0.0/16",
+  "engine": "postgresql",
+  "version": "16",
+  "plan": "essential",
+  "flavor": "db1-4",
+  "flavor_name": "b2-7",
+  "image_name": "Ubuntu 22.04"
+}

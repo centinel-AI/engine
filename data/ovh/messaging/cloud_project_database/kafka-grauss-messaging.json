@@ -1,0 +1,18 @@
+{
+  "engine": "kafka",
+  "version": "3.7",
+  "description": "kafka-grauss-messaging",
+  "plan": "business",
+  "flavor": "db2-7",
+  "nodes": [
+    {
+      "region": "GRA"
+    },
+    {
+      "region": "GRA"
+    },
+    {
+      "region": "GRA"
+    }
+  ]
+}

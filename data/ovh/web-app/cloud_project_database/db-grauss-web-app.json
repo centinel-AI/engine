@@ -1,0 +1,12 @@
+{
+  "engine": "postgresql",
+  "version": "16",
+  "description": "db-grauss-web-app",
+  "plan": "essential",
+  "flavor": "db1-4",
+  "nodes": [
+    {
+      "region": "GRA"
+    }
+  ]
+}

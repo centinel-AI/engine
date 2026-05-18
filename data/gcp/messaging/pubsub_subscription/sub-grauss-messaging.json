@@ -1,0 +1,6 @@
+{
+  "name": "sub-grauss-messaging",
+  "topic": "topic-grauss-messaging",
+  "ack_deadline_seconds": 30,
+  "message_retention_duration": "86400s"
+}

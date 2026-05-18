@@ -1,0 +1,9 @@
+{
+  "name": "compartment-grauss-messaging",
+  "compartment_id": "ocid1.tenancy.oc1..aaaaaaaaREPLACE_WITH_PARENT_COMPARTMENT_OR_TENANCY_OCID",
+  "description": "Grauss messaging compartment",
+  "defined_tags": null,
+  "freeform_tags": null,
+  "enable_delete": null,
+  "timeouts": null
+}

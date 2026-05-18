@@ -1,0 +1,11 @@
+{
+  "name": "db-grauss-data-lake",
+  "db_name": "GRAUSSDL",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaaREPLACE_WITH_COMPARTMENT_OCID",
+  "cpu_core_count": 1,
+  "data_storage_size_in_tbs": 1,
+  "db_workload": "DW",
+  "is_free_tier": true,
+  "admin_password": "REPLACE_WITH_STRONG_PASSWORD",
+  "display_name": "db-grauss-data-lake"
+}

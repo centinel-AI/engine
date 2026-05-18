@@ -1,0 +1,7 @@
+{
+  "name": "subnet-app-grauss-web-app",
+  "resource_group_name": "rg-grauss-web-app",
+  "virtual_network_name": "vnet-grauss-web-app",
+  "address_prefixes": ["10.2.1.0/24"],
+  "delegation": null
+}

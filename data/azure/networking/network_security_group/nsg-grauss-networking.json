@@ -1,0 +1,7 @@
+{
+  "name": "nsg-grauss-networking",
+  "location": "westeurope",
+  "resource_group_name": "rg-grauss-networking",
+  "security_rule": null,
+  "tags": null
+}

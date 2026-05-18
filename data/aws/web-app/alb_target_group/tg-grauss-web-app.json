@@ -1,0 +1,14 @@
+{
+  "name": "tg-grauss-web-app",
+  "port": 80,
+  "protocol": "HTTP",
+  "vpc_id": "REPLACE_WITH_VPC_ID",
+  "target_type": "instance",
+  "health_check": [
+    {
+      "path": "/",
+      "protocol": "HTTP"
+    }
+  ],
+  "tags": null
+}

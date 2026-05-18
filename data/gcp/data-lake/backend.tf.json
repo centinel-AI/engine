@@ -1,0 +1,12 @@
+{
+  "terraform": [
+    {
+      "backend": {
+        "gcs": {
+          "bucket": "grauss-tfstate-bootstrap",
+          "prefix": "data-lake/terraform"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "fw-allow-ssh-grauss-web-app",
+  "network": "vpc-grauss-web-app",
+  "allow": [
+    {"protocol": "tcp", "ports": ["22"]}
+  ],
+  "source_ranges": ["0.0.0.0/0"],
+  "target_tags": ["allow-ssh"]
+}

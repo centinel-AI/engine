@@ -1,0 +1,25 @@
+# Local environment — contains credentials, never commit
+.env
+
+# Generated workspace — populated by task workspace:<cloud>
+workspace/*
+!workspace/.gitkeep
+
+# Generated provider templates — populated by task generate:<cloud>
+providers/aws/*
+!providers/aws/.gitkeep
+providers/azure/*
+!providers/azure/.gitkeep
+providers/gcp/*
+!providers/gcp/.gitkeep
+providers/oci/*
+!providers/oci/.gitkeep
+
+# Codegen cache (terraform init + schema dump)
+tmp/
+
+# Generated test fixtures — populated by task generate:fixtures:<cloud>
+data/*/_test-all/
+
+# macOS
+.DS_Store

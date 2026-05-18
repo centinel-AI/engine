@@ -1,0 +1,7 @@
+{
+  "name": "vnet-grauss-web-app",
+  "location": "westeurope",
+  "resource_group_name": "rg-grauss-web-app",
+  "address_space": ["10.2.0.0/16"],
+  "tags": null
+}

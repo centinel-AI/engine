@@ -1,0 +1,5 @@
+{
+  "name": "vpc-grauss-networking",
+  "auto_create_subnetworks": false,
+  "description": "Grauss networking VPC"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "subnet-grauss-web-app",
+  "network": "vpc-grauss-web-app",
+  "ip_cidr_range": "10.2.1.0/24",
+  "region": "europe-west1",
+  "private_ip_google_access": null
+}

@@ -1,0 +1,180 @@
+name: Build images
+
+on:
+  workflow_dispatch:
+    inputs:
+      cloud:
+        description: "Cloud provider"
+        required: true
+        type: choice
+        default: all
+        options:
+          - all
+          - azure
+          - aws
+          - gcp
+          - oci
+      engine:
+        description: "Engine"
+        required: true
+        type: choice
+        default: all
+        options:
+          - all
+          - terraform
+          - opentofu
+      version:
+        description: "Image version tag (e.g. v1.2.3). Defaults to the git tag when triggered by a push."
+        required: false
+        type: string
+        default: ""
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.value }}
+
+    steps:
+      - name: Build matrix
+        id: matrix
+        run: |
+          CLOUD="${{ inputs.cloud || 'all' }}"
+          ENGINE="${{ inputs.engine || 'all' }}"
+          [ "$CLOUD"  = "all" ] && CLOUDS='["azure","aws","gcp","oci"]' || CLOUDS='["'"$CLOUD"'"]'
+          [ "$ENGINE" = "all" ] && ENGINES='["terraform","opentofu"]'   || ENGINES='["'"$ENGINE"'"]'
+          echo "value={\"cloud\":$CLOUDS,\"engine\":$ENGINES}" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Resolve version
+        id: version
+        run: |
+          VERSION="${{ inputs.version || github.ref_name }}"
+          if ! echo "$VERSION" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$'; then
+            echo "::error::Expected a semver tag (e.g. v1.2.3). Got: $VERSION"
+            exit 1
+          fi
+          IS_RELEASE=$(echo "$VERSION" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$' && echo true || echo false)
+          echo "value=$VERSION"           >> "$GITHUB_OUTPUT"
+          echo "is_release=$IS_RELEASE"   >> "$GITHUB_OUTPUT"
+
+      - name: Read version pins
+        id: pins
+        run: |
+          val() { grep "^$1=" .env.example | cut -d= -f2- | tr -d '"'; }
+          TF=$(val ENGINE_TERRAFORM_VERSION)
+          OT=$(val ENGINE_OPENTOFU_VERSION)
+          echo "terraform=$TF"                                    >> "$GITHUB_OUTPUT"
+          echo "opentofu=$OT"                                     >> "$GITHUB_OUTPUT"
+          echo "alpine=$(val ENGINE_ALPINE_VERSION)"              >> "$GITHUB_OUTPUT"
+          echo "azurerm=$(val ENGINE_AZURERM_VERSION)"            >> "$GITHUB_OUTPUT"
+          echo "azuread=$(val ENGINE_AZUREAD_VERSION)"            >> "$GITHUB_OUTPUT"
+          echo "google=$(val ENGINE_GOOGLE_PROVIDER_VERSION)"     >> "$GITHUB_OUTPUT"
+          echo "aws=$(val ENGINE_AWS_PROVIDER_VERSION)"           >> "$GITHUB_OUTPUT"
+          echo "oci=$(val ENGINE_OCI_PROVIDER_VERSION)"           >> "$GITHUB_OUTPUT"
+          echo "terraform_required==$TF"                          >> "$GITHUB_OUTPUT"
+          echo "opentofu_required==$OT"                           >> "$GITHUB_OUTPUT"
+
+      - name: Resolve image tags
+        id: tags
+        run: |
+          IMAGE="ghcr.io/${{ github.repository_owner }}/grauss-${{ matrix.cloud }}-${{ matrix.engine }}"
+          VERSION="${{ steps.version.outputs.value }}"
+          TAGS="${IMAGE}:${VERSION}"
+          if [ "${{ steps.version.outputs.is_release }}" = "true" ]; then
+            TAGS="${TAGS}
+          ${IMAGE}:latest"
+          fi
+          {
+            echo "value<<TAGS_EOF"
+            echo "$TAGS"
+            echo "TAGS_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ steps.pins.outputs.terraform }}
+
+      - name: Install Task
+        uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Restore codegen schema cache
+        uses: actions/cache@v5
+        with:
+          path: tmp/codegen
+          key: codegen-${{ matrix.cloud }}-${{ hashFiles('.env.example') }}
+          restore-keys: codegen-${{ matrix.cloud }}-
+
+      - name: Initialize environment
+        run: task env:init
+
+      - name: Generate providers
+        run: task generate:${{ matrix.cloud }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.tags.outputs.value }}
+          build-args: |
+            CLOUD_PROVIDER=${{ matrix.cloud }}
+            ENGINE=${{ matrix.engine }}
+            TERRAFORM_VERSION=${{ steps.pins.outputs.terraform }}
+            OPENTOFU_VERSION=${{ steps.pins.outputs.opentofu }}
+            ALPINE_VERSION=${{ steps.pins.outputs.alpine }}
+            AZURERM_VERSION=${{ steps.pins.outputs.azurerm }}
+            AZUREAD_VERSION=${{ steps.pins.outputs.azuread }}
+            GOOGLE_PROVIDER_VERSION=${{ steps.pins.outputs.google }}
+            AWS_PROVIDER_VERSION=${{ steps.pins.outputs.aws }}
+            OCI_PROVIDER_VERSION=${{ steps.pins.outputs.oci }}
+            TERRAFORM_REQUIRED_VERSION=${{ steps.pins.outputs.terraform_required }}
+            OPENTOFU_REQUIRED_VERSION=${{ steps.pins.outputs.opentofu_required }}
+          cache-from: type=gha,scope=build-${{ matrix.cloud }}-${{ matrix.engine }}
+          cache-to: type=gha,mode=max,scope=build-${{ matrix.cloud }}-${{ matrix.engine }}
+
+      - name: Summary
+        if: always()
+        run: |
+          IMAGE="ghcr.io/${{ github.repository_owner }}/grauss-${{ matrix.cloud }}-${{ matrix.engine }}"
+          VERSION="${{ steps.version.outputs.value || 'unknown (version resolution failed)' }}"
+          STATUS="${{ job.status }}"
+          echo "### Image build — ${STATUS}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| | |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|--|--|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| **Image** | \`${IMAGE}:${VERSION}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| **Cloud** | \`${{ matrix.cloud }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| **Engine** | \`${{ matrix.engine }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| **Commit** | \`${{ github.sha }}\` |" >> "$GITHUB_STEP_SUMMARY"

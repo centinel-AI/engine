@@ -1,0 +1,14 @@
+{
+  "name": "db-grauss-web-app",
+  "instance_class": "db.t3.micro",
+  "engine": "postgres",
+  "engine_version": "16",
+  "allocated_storage": 20,
+  "username": "postgres",
+  "password": "REPLACE_WITH_STRONG_PASSWORD",
+  "db_subnet_group_name": "dbsg-grauss-web-app",
+  "vpc_security_group_ids": ["REPLACE_WITH_DB_SG_ID"],
+  "skip_final_snapshot": true,
+  "storage_type": "gp2",
+  "tags": null
+}

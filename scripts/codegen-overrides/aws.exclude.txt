@@ -1,0 +1,27 @@
+# Resources excluded from codegen for hashicorp/aws.
+#
+# Each line is a full resource type name. Blank lines and lines starting with
+# `#` are ignored. Excluded resources can still be used by hand-writing a
+# template under providers/aws/ with the same filename — codegen only deletes
+# files it would itself generate (`--clean` is name-scoped).
+#
+# These resources have provider-side cross-field constraints
+# (ExactlyOneOf / RequiredWith / AtLeastOneOf) that fire during `terraform
+# validate` even when the resource has no instances, because emitting
+# `attr = try(each.value.attr, null)` is treated by the provider as "attr was
+# set, to null". HCL does not allow conditionally omitting a top-level
+# attribute, so the only options are to skip the resource or hand-write it.
+
+aws_default_subnet
+# RequiredWith group includes the computed-only `outpost_arn`; partial
+# specification is rejected by the SDK validator.
+
+aws_odb_cloud_autonomous_vm_cluster
+aws_odb_cloud_vm_cluster
+aws_odb_network_peering_connection
+# Oracle Database@AWS: ExactlyOneOf between `*_id` and `*_arn` pairs; both
+# null is treated as "both set" by the provider's validator.
+
+aws_quicksight_refresh_schedule
+# Plugin Framework type rejects null on a required nested value at decode
+# time, before for_each empties out the block.

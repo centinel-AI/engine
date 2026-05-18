@@ -1,0 +1,8 @@
+{
+  "name": "pip-grauss-vm-simple",
+  "location": "westeurope",
+  "resource_group_name": "rg-grauss-vm-simple",
+  "allocation_method": "Static",
+  "sku": "Basic",
+  "tags": null
+}

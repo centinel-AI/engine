@@ -1,0 +1,10 @@
+{
+  "name": "subnet-private-a-grauss-kubernetes",
+  "vpc_id": "REPLACE_WITH_VPC_ID",
+  "cidr_block": "10.3.1.0/24",
+  "availability_zone": "eu-west-1a",
+  "map_public_ip_on_launch": null,
+  "tags": {
+    "kubernetes.io/role/internal-elb": "1"
+  }
+}

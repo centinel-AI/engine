@@ -1,0 +1,83 @@
+name: Feature request
+description: Suggest an improvement, new resource type, or better workflows for Grauss.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share **what** you want to achieve and **why** it matters. Concrete examples (commands, directory layout, JSON shape) help maintainers evaluate the idea.
+
+        For **large or opinionated** changes, a short design note here avoids rework later.
+
+        **Cloud / provider registry context:**
+        - **Azure** — [**AzureRM**](https://registry.terraform.io/providers/hashicorp/azurerm/latest) for resources; [**AzureAD**](https://registry.terraform.io/providers/hashicorp/azuread/latest) for identity / Entra ID — both are the **same Azure** scope.
+        - **Oracle Cloud** — [**OCI**](https://registry.terraform.io/providers/oracle/oci/latest).
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Problem or motivation
+      description: What is hard, missing, or inconsistent today?
+      placeholder: Deploying X requires manual steps outside Grauss; we'd like ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What should Grauss do? Be as specific as you can (new resource type, Taskfile target, compose change, workspace behavior, docs).
+      placeholder: |
+        - Add support for …
+        - Expected UX: `task …` then …
+    validations:
+      required: true
+
+  - type: dropdown
+    id: cloud_scope
+    attributes:
+      label: Cloud scope
+      description: >-
+        Which providers does this mainly affect? Choose "Azure" for Azure AD / Entra-only ideas too —
+        that is the Azure stack together with AzureRM.
+      options:
+        - All supported clouds (Azure, GCP, AWS, OCI)
+        - Azure only (AzureRM + Azure AD / Entra ID)
+        - GCP only
+        - AWS only
+        - Oracle Cloud (OCI) only
+        - Not cloud-specific (tooling, docs, CI)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Where does this change live?
+      options:
+        - New or extended Terraform / OpenTofu resources (`providers/`)
+        - JSON data conventions or samples (`data/`)
+        - Docker / Compose / images
+        - Workspace scripts (`task workspace:*`, `scripts/`)
+        - Codegen (`scripts/codegen.py`, `generate:*`)
+        - Documentation
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other ways you thought about solving this (including "do nothing").
+      render: markdown
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Links to provider docs, diagrams, prior discussions, or examples from other tools.
+      render: markdown

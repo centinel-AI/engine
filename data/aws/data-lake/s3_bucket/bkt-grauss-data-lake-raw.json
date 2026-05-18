@@ -1,0 +1,7 @@
+{
+  "name": "bkt-grauss-data-lake-raw",
+  "tags": {
+    "Project": "grauss",
+    "Layer": "raw"
+  }
+}

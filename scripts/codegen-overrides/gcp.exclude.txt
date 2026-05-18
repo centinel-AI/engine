@@ -1,0 +1,5 @@
+# Resources excluded from codegen for hashicorp/google.
+#
+# See scripts/codegen-overrides/aws.exclude.txt for the rationale.
+# No exclusions known at the pinned version — all generated resources pass
+# `terraform validate`.

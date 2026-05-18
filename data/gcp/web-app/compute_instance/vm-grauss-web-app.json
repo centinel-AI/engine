@@ -1,0 +1,23 @@
+{
+  "name": "vm-grauss-web-app",
+  "machine_type": "e2-micro",
+  "zone": "europe-west1-b",
+  "tags": ["allow-ssh", "allow-http"],
+  "network_interface": [
+    {
+      "network": "vpc-grauss-web-app",
+      "subnetwork": "subnet-grauss-web-app",
+      "access_config": [{}]
+    }
+  ],
+  "boot_disk": [
+    {
+      "initialize_params": [
+        {
+          "image": "ubuntu-os-cloud/ubuntu-2204-lts",
+          "size": 10
+        }
+      ]
+    }
+  ]
+}

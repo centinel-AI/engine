@@ -1,0 +1,12 @@
+{
+  "name": "vm-app-grauss-web-app",
+  "ami": "ami-REPLACE_WITH_UBUNTU_2204_AMI",
+  "instance_type": "t3.micro",
+  "subnet_id": "REPLACE_WITH_PUBLIC_SUBNET_A_ID",
+  "vpc_security_group_ids": ["REPLACE_WITH_APP_SG_ID"],
+  "associate_public_ip_address": null,
+  "tags": {
+    "Name": "vm-app-grauss-web-app",
+    "Project": "grauss"
+  }
+}

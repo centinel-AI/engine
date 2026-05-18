@@ -1,0 +1,10 @@
+{
+  "name": "tfstate",
+  "resourceGroup": "rg-grauss-tfstate",
+  "storageAccountName": "stgraussbtfstate01",
+  "container_access_type": "private",
+  "default_encryption_scope": null,
+  "encryption_scope_override_enabled": null,
+  "metadata": null,
+  "timeouts": null
+}

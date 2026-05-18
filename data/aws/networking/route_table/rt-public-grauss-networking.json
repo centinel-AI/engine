@@ -1,0 +1,10 @@
+{
+  "name": "rt-public-grauss-networking",
+  "vpc_id": "REPLACE_WITH_VPC_ID",
+  "route": [
+    {
+      "cidr_block": "0.0.0.0/0",
+      "gateway_id": "REPLACE_WITH_IGW_ID"
+    }
+  ]
+}

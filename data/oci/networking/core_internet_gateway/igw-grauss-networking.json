@@ -1,0 +1,7 @@
+{
+  "name": "igw-grauss-networking",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaaREPLACE_WITH_COMPARTMENT_OCID",
+  "vcn_id": "ocid1.vcn.oc1..aaaaaaaaREPLACE_WITH_VCN_OCID",
+  "display_name": "igw-grauss-networking",
+  "enabled": true
+}

@@ -1,0 +1,4 @@
+{
+  "name": "topic-grauss-messaging",
+  "message_retention_duration": "86600s"
+}

@@ -1,0 +1,5 @@
+{
+  "name": "dbsg-grauss-web-app",
+  "subnet_ids": ["REPLACE_WITH_PRIVATE_SUBNET_ID"],
+  "tags": null
+}

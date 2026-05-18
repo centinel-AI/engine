@@ -1,0 +1,29 @@
+{
+  "name": "sl-grauss-web-app",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaaREPLACE_WITH_COMPARTMENT_OCID",
+  "vcn_id": "ocid1.vcn.oc1..aaaaaaaaREPLACE_WITH_VCN_OCID",
+  "display_name": "sl-grauss-web-app",
+  "egress_security_rules": [
+    {
+      "destination": "0.0.0.0/0",
+      "protocol": "all"
+    }
+  ],
+  "ingress_security_rules": [
+    {
+      "source": "0.0.0.0/0",
+      "protocol": "6",
+      "tcp_options": [{"min": 22, "max": 22}]
+    },
+    {
+      "source": "0.0.0.0/0",
+      "protocol": "6",
+      "tcp_options": [{"min": 80, "max": 80}]
+    },
+    {
+      "source": "0.0.0.0/0",
+      "protocol": "6",
+      "tcp_options": [{"min": 443, "max": 443}]
+    }
+  ]
+}

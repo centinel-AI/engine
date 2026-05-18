@@ -1,0 +1,9 @@
+{
+  "name": "grauss-tfstate-bootstrap",
+  "compartment_id": "ocid1.tenancy.oc1..aaaaaaaaREPLACE_WITH_TENANCY_ROOT_COMPARTMENT_OCID",
+  "description": "Bootstrap compartment for Grauss (remote state in OCI Object Storage after follow-on resources exist). Parent is typically the tenancy root compartment OCID.",
+  "defined_tags": null,
+  "freeform_tags": null,
+  "enable_delete": null,
+  "timeouts": null
+}

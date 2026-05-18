@@ -1,0 +1,8 @@
+{
+  "name": "sg-eks-grauss-kubernetes",
+  "description": "EKS cluster security group",
+  "vpc_id": "REPLACE_WITH_VPC_ID",
+  "ingress": null,
+  "egress": null,
+  "tags": null
+}

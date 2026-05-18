@@ -1,0 +1,13 @@
+{
+  "name": "stgraussbtfstate01",
+  "resourceGroup": "rg-grauss-tfstate",
+  "location": "westeurope",
+  "sku": {
+    "tier": "Standard",
+    "name": "LRS"
+  },
+  "properties": {
+    "isHnsEnabled": null,
+    "publicNetworkAccess": null
+  }
+}

@@ -1,0 +1,11 @@
+# Resources excluded from codegen for hashicorp/azurerm + hashicorp/azuread.
+#
+# See scripts/codegen-overrides/aws.exclude.txt for the rationale; same
+# pattern: provider-side cross-field constraints (RequiredWith /
+# ConflictsWith / ExactlyOneOf) fire during `terraform validate` even when
+# for_each is empty, because emitting `attr = try(each.value.attr, null)` is
+# treated as "attr was set, to null".
+
+azurerm_hdinsight_kafka_cluster
+# RequiredWith between top-level `rest_proxy` block and a deeply nested
+# `roles.kafka_management_node`; both null is treated as partial spec.

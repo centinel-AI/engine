@@ -1,0 +1,5 @@
+{
+  "name": "vpc-grauss-vm-simple",
+  "auto_create_subnetworks": false,
+  "description": null
+}

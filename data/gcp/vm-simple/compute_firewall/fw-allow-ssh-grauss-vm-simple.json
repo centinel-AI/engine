@@ -1,0 +1,9 @@
+{
+  "name": "fw-allow-ssh-grauss-vm-simple",
+  "network": "vpc-grauss-vm-simple",
+  "allow": [
+    {"protocol": "tcp", "ports": ["22"]}
+  ],
+  "source_ranges": ["0.0.0.0/0"],
+  "target_tags": ["allow-ssh"]
+}

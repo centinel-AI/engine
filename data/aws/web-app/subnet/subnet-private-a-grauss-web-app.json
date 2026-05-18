@@ -1,0 +1,7 @@
+{
+  "name": "subnet-private-a-grauss-web-app",
+  "vpc_id": "REPLACE_WITH_VPC_ID",
+  "cidr_block": "10.2.3.0/24",
+  "availability_zone": "eu-west-1a",
+  "map_public_ip_on_launch": null
+}

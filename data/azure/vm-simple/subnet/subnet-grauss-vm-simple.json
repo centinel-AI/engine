@@ -1,0 +1,7 @@
+{
+  "name": "subnet-grauss-vm-simple",
+  "resource_group_name": "rg-grauss-vm-simple",
+  "virtual_network_name": "vnet-grauss-vm-simple",
+  "address_prefixes": ["10.1.1.0/24"],
+  "delegation": null
+}

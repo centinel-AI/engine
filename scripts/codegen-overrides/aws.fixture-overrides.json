@@ -1,0 +1,11 @@
+{
+  "cidr_block": "10.0.0.0/16",
+  "cidr_blocks": ["10.0.0.0/16"],
+  "ipv6_cidr_block": "::/0",
+  "availability_zone": "eu-west-1a",
+  "availability_zones": ["eu-west-1a"],
+  "region": "eu-west-1",
+  "protocol": "-1",
+  "from_port": 0,
+  "to_port": 0
+}

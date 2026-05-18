@@ -1,0 +1,7 @@
+{
+  "name": "vcn-grauss-kubernetes",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaaREPLACE_WITH_COMPARTMENT_OCID",
+  "cidr_block": "10.3.0.0/16",
+  "display_name": "vcn-grauss-kubernetes",
+  "dns_label": "grausskube"
+}

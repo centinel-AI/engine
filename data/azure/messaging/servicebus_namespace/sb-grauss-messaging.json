@@ -1,0 +1,9 @@
+{
+  "name": "sb-grauss-messaging",
+  "location": "westeurope",
+  "resource_group_name": "rg-grauss-messaging",
+  "sku": "Basic",
+  "tags": {
+    "Project": "grauss"
+  }
+}

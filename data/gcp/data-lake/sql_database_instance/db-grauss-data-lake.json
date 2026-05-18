@@ -1,0 +1,18 @@
+{
+  "name": "db-grauss-data-lake",
+  "database_version": "POSTGRES_16",
+  "region": "europe-west1",
+  "deletion_protection": false,
+  "settings": [
+    {
+      "tier": "db-f1-micro",
+      "disk_size": 10,
+      "disk_type": "PD_SSD",
+      "backup_configuration": [
+        {
+          "enabled": false
+        }
+      ]
+    }
+  ]
+}

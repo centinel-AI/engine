@@ -1,0 +1,7 @@
+{
+  "name": "subnet-grauss-vm-simple",
+  "network": "vpc-grauss-vm-simple",
+  "ip_cidr_range": "10.1.1.0/24",
+  "region": "europe-west1",
+  "private_ip_google_access": null
+}

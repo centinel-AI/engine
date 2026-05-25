@@ -2,317 +2,29 @@ version: "3"
 
 tasks:
 
-  env:init:
-    desc: Create .env from .env.example if it does not exist yet
+  # ---------------------------------------------------------------------------
+  # Internal helpers — not shown in `task --list`
+  # ---------------------------------------------------------------------------
+
+  _env:init:
+    internal: true
     cmds:
       - bash scripts/env-init.sh
 
-  # ---------------------------------------------------------------------------
-  # Internal helpers — not shown in `task --list`, called by the public tasks
-  # below with CLOUD / ENGINE / PROJECT / EXTRA_ARGS vars.
-  # ---------------------------------------------------------------------------
-
-  _workspace:
+  _generate:
     internal: true
-    deps: [env:init]
-    env:
-      PROJECT: '{{.PROJECT | default ""}}'
-      ENGINE_IAC_ENGINE: '{{.ENGINE}}'
+    deps: [_env:init]
     cmds:
-      - bash scripts/populate-workspace.sh {{.CLOUD}}
-
-  _run:
-    internal: true
-    deps: [env:init]
-    cmds:
-      - |
-        EXTRA=""
-        [ -n "{{.PROJECT}}" ] && EXTRA="-e TF_VAR_project={{.PROJECT}}"
-        docker compose run --rm $EXTRA engine-{{.CLOUD}}-{{.ENGINE}} {{.EXTRA_ARGS}}
+      - bash scripts/generate-resources.sh {{.CLOUD}}
 
   _build:one:
     internal: true
-    deps: [env:init]
+    deps: [_env:init]
     cmds:
       - docker compose build --no-cache engine-{{.CLOUD}}-{{.ENGINE}}
       - printf '\n  %-10s grauss-{{.CLOUD}}-{{.ENGINE}}\n\n' "Image:"
 
-  # --- workspace ---
-
-  "workspace:azure":
-    desc: "Populate workspace for Azure with Terraform (shorthand for workspace:azure:terraform)"
-    cmds:
-      - task: _workspace
-        vars: { CLOUD: azure, ENGINE: terraform, PROJECT: "{{.PROJECT}}" }
-
-  "workspace:azure:terraform":
-    desc: "Populate workspace for Azure; .iac_engine_bin = terraform"
-    cmds:
-      - task: _workspace
-        vars: { CLOUD: azure, ENGINE: terraform, PROJECT: "{{.PROJECT}}" }
-
-  "workspace:azure:opentofu":
-    desc: "Populate workspace for Azure; .iac_engine_bin = tofu (OpenTofu)"
-    cmds:
-      - task: _workspace
-        vars: { CLOUD: azure, ENGINE: opentofu, PROJECT: "{{.PROJECT}}" }
-
-  "workspace:aws":
-    desc: "Populate workspace for AWS with Terraform (shorthand for workspace:aws:terraform)"
-    cmds:
-      - task: _workspace
-        vars: { CLOUD: aws, ENGINE: terraform, PROJECT: "{{.PROJECT}}" }
-
-  "workspace:aws:terraform":
-    desc: "Populate workspace for AWS; .iac_engine_bin = terraform"
-    cmds:
-      - task: _workspace
-        vars: { CLOUD: aws, ENGINE: terraform, PROJECT: "{{.PROJECT}}" }
-
-  "workspace:aws:opentofu":
-    desc: "Populate workspace for AWS; .iac_engine_bin = tofu (OpenTofu)"
-    cmds:
-      - task: _workspace
-        vars: { CLOUD: aws, ENGINE: opentofu, PROJECT: "{{.PROJECT}}" }
-
-  "workspace:gcp":
-    desc: "Populate workspace for GCP with Terraform (shorthand for workspace:gcp:terraform)"
-    cmds:
-      - task: _workspace
-        vars: { CLOUD: gcp, ENGINE: terraform, PROJECT: "{{.PROJECT}}" }
-
-  "workspace:gcp:terraform":
-    desc: "Populate workspace for GCP; .iac_engine_bin = terraform"
-    cmds:
-      - task: _workspace
-        vars: { CLOUD: gcp, ENGINE: terraform, PROJECT: "{{.PROJECT}}" }
-
-  "workspace:gcp:opentofu":
-    desc: "Populate workspace for GCP; .iac_engine_bin = tofu (OpenTofu)"
-    cmds:
-      - task: _workspace
-        vars: { CLOUD: gcp, ENGINE: opentofu, PROJECT: "{{.PROJECT}}" }
-
-  "workspace:oci":
-    desc: "Populate workspace for OCI with Terraform (shorthand for workspace:oci:terraform)"
-    cmds:
-      - task: _workspace
-        vars: { CLOUD: oci, ENGINE: terraform, PROJECT: "{{.PROJECT}}" }
-
-  "workspace:oci:terraform":
-    desc: "Populate workspace for OCI; .iac_engine_bin = terraform"
-    cmds:
-      - task: _workspace
-        vars: { CLOUD: oci, ENGINE: terraform, PROJECT: "{{.PROJECT}}" }
-
-  "workspace:oci:opentofu":
-    desc: "Populate workspace for OCI; .iac_engine_bin = tofu (OpenTofu)"
-    cmds:
-      - task: _workspace
-        vars: { CLOUD: oci, ENGINE: opentofu, PROJECT: "{{.PROJECT}}" }
-
-  "workspace:ovh":
-    desc: "Populate workspace for OVH with Terraform (shorthand for workspace:ovh:terraform)"
-    cmds:
-      - task: _workspace
-        vars: { CLOUD: ovh, ENGINE: terraform, PROJECT: "{{.PROJECT}}" }
-
-  "workspace:ovh:terraform":
-    desc: "Populate workspace for OVH; .iac_engine_bin = terraform"
-    cmds:
-      - task: _workspace
-        vars: { CLOUD: ovh, ENGINE: terraform, PROJECT: "{{.PROJECT}}" }
-
-  "workspace:ovh:opentofu":
-    desc: "Populate workspace for OVH; .iac_engine_bin = tofu (OpenTofu)"
-    cmds:
-      - task: _workspace
-        vars: { CLOUD: ovh, ENGINE: opentofu, PROJECT: "{{.PROJECT}}" }
-
-  # --- clean ---
-
-  clean:
-    desc: "Strip providers/* and workspace/ to .gitkeep; remove tmp/"
-    cmds:
-      - bash scripts/clean.sh
-
-  # --- run ---
-
-  "run:azure":
-    desc: "Run engine-azure-terraform (shorthand for run:azure:terraform). PROJECT=<name> overrides project. Append -- terraform plan|apply|destroy etc."
-    cmds:
-      - task: _run
-        vars: { CLOUD: azure, ENGINE: terraform, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
-
-  "run:azure:terraform":
-    desc: "Run engine-azure-terraform. PROJECT=<name> overrides project. Append -- terraform plan|apply|destroy etc."
-    cmds:
-      - task: _run
-        vars: { CLOUD: azure, ENGINE: terraform, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
-
-  "run:azure:opentofu":
-    desc: "Run engine-azure-opentofu. PROJECT=<name> overrides project. Append -- tofu plan|apply|destroy etc."
-    cmds:
-      - task: _run
-        vars: { CLOUD: azure, ENGINE: opentofu, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
-
-  "run:aws":
-    desc: "Run engine-aws-terraform (shorthand for run:aws:terraform). PROJECT=<name> overrides project. Append -- terraform plan|apply|destroy etc."
-    cmds:
-      - task: _run
-        vars: { CLOUD: aws, ENGINE: terraform, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
-
-  "run:aws:terraform":
-    desc: "Run engine-aws-terraform. PROJECT=<name> overrides project. Append -- terraform plan|apply|destroy etc."
-    cmds:
-      - task: _run
-        vars: { CLOUD: aws, ENGINE: terraform, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
-
-  "run:aws:opentofu":
-    desc: "Run engine-aws-opentofu. PROJECT=<name> overrides project. Append -- tofu plan|apply|destroy etc."
-    cmds:
-      - task: _run
-        vars: { CLOUD: aws, ENGINE: opentofu, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
-
-  "run:gcp":
-    desc: "Run engine-gcp-terraform (shorthand for run:gcp:terraform). PROJECT=<name> overrides project. Append -- terraform plan|apply|destroy etc."
-    cmds:
-      - task: _run
-        vars: { CLOUD: gcp, ENGINE: terraform, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
-
-  "run:gcp:terraform":
-    desc: "Run engine-gcp-terraform. PROJECT=<name> overrides project. Append -- terraform plan|apply|destroy etc."
-    cmds:
-      - task: _run
-        vars: { CLOUD: gcp, ENGINE: terraform, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
-
-  "run:gcp:opentofu":
-    desc: "Run engine-gcp-opentofu. PROJECT=<name> overrides project. Append -- tofu plan|apply|destroy etc."
-    cmds:
-      - task: _run
-        vars: { CLOUD: gcp, ENGINE: opentofu, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
-
-  "run:oci":
-    desc: "Run engine-oci-terraform (shorthand for run:oci:terraform). PROJECT=<name> overrides project. Append -- terraform plan|apply|destroy etc."
-    cmds:
-      - task: _run
-        vars: { CLOUD: oci, ENGINE: terraform, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
-
-  "run:oci:terraform":
-    desc: "Run engine-oci-terraform. PROJECT=<name> overrides project. Append -- terraform plan|apply|destroy etc."
-    cmds:
-      - task: _run
-        vars: { CLOUD: oci, ENGINE: terraform, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
-
-  "run:oci:opentofu":
-    desc: "Run engine-oci-opentofu. PROJECT=<name> overrides project. Append -- tofu plan|apply|destroy etc."
-    cmds:
-      - task: _run
-        vars: { CLOUD: oci, ENGINE: opentofu, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
-
-  "run:ovh":
-    desc: "Run engine-ovh-terraform (shorthand for run:ovh:terraform). PROJECT=<name> overrides project. Append -- terraform plan|apply|destroy etc."
-    cmds:
-      - task: _run
-        vars: { CLOUD: ovh, ENGINE: terraform, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
-
-  "run:ovh:terraform":
-    desc: "Run engine-ovh-terraform. PROJECT=<name> overrides project. Append -- terraform plan|apply|destroy etc."
-    cmds:
-      - task: _run
-        vars: { CLOUD: ovh, ENGINE: terraform, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
-
-  "run:ovh:opentofu":
-    desc: "Run engine-ovh-opentofu. PROJECT=<name> overrides project. Append -- tofu plan|apply|destroy etc."
-    cmds:
-      - task: _run
-        vars: { CLOUD: ovh, ENGINE: opentofu, PROJECT: "{{.PROJECT}}", EXTRA_ARGS: "{{.CLI_ARGS}}" }
-
-  # --- build ---
-
-  "build:azure:terraform":
-    desc: "Build Docker image — Azure, Terraform (run task generate:azure first)"
-    cmds:
-      - task: _build:one
-        vars: { CLOUD: azure, ENGINE: terraform }
-
-  "build:azure:opentofu":
-    desc: "Build Docker image — Azure, OpenTofu (run task generate:azure first)"
-    cmds:
-      - task: _build:one
-        vars: { CLOUD: azure, ENGINE: opentofu }
-
-  "build:aws:terraform":
-    desc: "Build Docker image — AWS, Terraform (run task generate:aws first)"
-    cmds:
-      - task: _build:one
-        vars: { CLOUD: aws, ENGINE: terraform }
-
-  "build:aws:opentofu":
-    desc: "Build Docker image — AWS, OpenTofu (run task generate:aws first)"
-    cmds:
-      - task: _build:one
-        vars: { CLOUD: aws, ENGINE: opentofu }
-
-  "build:gcp:terraform":
-    desc: "Build Docker image — GCP, Terraform (run task generate:gcp first)"
-    cmds:
-      - task: _build:one
-        vars: { CLOUD: gcp, ENGINE: terraform }
-
-  "build:gcp:opentofu":
-    desc: "Build Docker image — GCP, OpenTofu (run task generate:gcp first)"
-    cmds:
-      - task: _build:one
-        vars: { CLOUD: gcp, ENGINE: opentofu }
-
-  "build:oci:terraform":
-    desc: "Build Docker image — OCI, Terraform (run task generate:oci first)"
-    cmds:
-      - task: _build:one
-        vars: { CLOUD: oci, ENGINE: terraform }
-
-  "build:oci:opentofu":
-    desc: "Build Docker image — OCI, OpenTofu (run task generate:oci first)"
-    cmds:
-      - task: _build:one
-        vars: { CLOUD: oci, ENGINE: opentofu }
-
-  "build:ovh:terraform":
-    desc: "Build Docker image — OVH, Terraform (run task generate:ovh first)"
-    cmds:
-      - task: _build:one
-        vars: { CLOUD: ovh, ENGINE: terraform }
-
-  "build:ovh:opentofu":
-    desc: "Build Docker image — OVH, OpenTofu (run task generate:ovh first)"
-    cmds:
-      - task: _build:one
-        vars: { CLOUD: ovh, ENGINE: opentofu }
-
-  "build:all":
-    desc: "Generate all providers then build all ten Docker images in parallel"
-    cmds:
-      - task: generate:all
-      - task: _build:images
-      - |
-        echo ""
-        printf '  %-9s %-12s %-28s\n' "Cloud" "Engine" "Image"
-        echo "  ─────────────────────────────────────────────────────"
-        printf '  %-9s %-12s %-28s\n' "azure" "terraform" "grauss-azure-terraform"
-        printf '  %-9s %-12s %-28s\n' "azure" "opentofu"  "grauss-azure-opentofu"
-        printf '  %-9s %-12s %-28s\n' "aws"   "terraform" "grauss-aws-terraform"
-        printf '  %-9s %-12s %-28s\n' "aws"   "opentofu"  "grauss-aws-opentofu"
-        printf '  %-9s %-12s %-28s\n' "gcp"   "terraform" "grauss-gcp-terraform"
-        printf '  %-9s %-12s %-28s\n' "gcp"   "opentofu"  "grauss-gcp-opentofu"
-        printf '  %-9s %-12s %-28s\n' "oci"   "terraform" "grauss-oci-terraform"
-        printf '  %-9s %-12s %-28s\n' "oci"   "opentofu"  "grauss-oci-opentofu"
-        printf '  %-9s %-12s %-28s\n' "ovh"   "terraform" "grauss-ovh-terraform"
-        printf '  %-9s %-12s %-28s\n' "ovh"   "opentofu"  "grauss-ovh-opentofu"
-        echo "  ─────────────────────────────────────────────────────"
-        echo ""
-
-  "_build:images":
+  _build:images:
     internal: true
     deps:
       - task: "build:azure:terraform"
@@ -330,45 +42,45 @@ tasks:
 
   "generate:azure":
     desc: Regenerate providers/azure/*.tf from the pinned AzureRM + AzureAD provider schemas
-    deps: [env:init]
     cmds:
-      - bash scripts/generate-resources.sh azure
+      - task: _generate
+        vars: { CLOUD: azure }
       - |
         printf '\n  %-12s hashicorp/azurerm + hashicorp/azuread\n' "Providers:"
         printf '  %-12s providers/azure/\n\n'                      "Output:"
 
   "generate:aws":
     desc: Regenerate providers/aws/*.tf from the pinned AWS provider schema
-    deps: [env:init]
     cmds:
-      - bash scripts/generate-resources.sh aws
+      - task: _generate
+        vars: { CLOUD: aws }
       - |
         printf '\n  %-12s hashicorp/aws\n' "Provider:"
         printf '  %-12s providers/aws/\n\n' "Output:"
 
   "generate:gcp":
     desc: Regenerate providers/gcp/*.tf from the pinned Google provider schema
-    deps: [env:init]
     cmds:
-      - bash scripts/generate-resources.sh gcp
+      - task: _generate
+        vars: { CLOUD: gcp }
       - |
         printf '\n  %-12s hashicorp/google\n' "Provider:"
         printf '  %-12s providers/gcp/\n\n'  "Output:"
 
   "generate:oci":
     desc: Regenerate providers/oci/*.tf from the pinned OCI provider schema
-    deps: [env:init]
     cmds:
-      - bash scripts/generate-resources.sh oci
+      - task: _generate
+        vars: { CLOUD: oci }
       - |
         printf '\n  %-12s oracle/oci\n'       "Provider:"
         printf '  %-12s providers/oci/\n\n'  "Output:"
 
   "generate:ovh":
     desc: Regenerate providers/ovh/*.tf from the pinned OVH + AWS (S3) provider schemas
-    deps: [env:init]
     cmds:
-      - bash scripts/generate-resources.sh ovh
+      - task: _generate
+        vars: { CLOUD: ovh }
       - |
         printf '\n  %-12s ovh/ovh + hashicorp/aws (S3 for Object Storage)\n' "Providers:"
         printf '  %-12s providers/ovh/\n\n'                                  "Output:"
@@ -392,4 +104,88 @@ tasks:
         printf '  %-9s %-42s %-18s\n' "oci"   "oracle/oci"                            "providers/oci/"
         printf '  %-9s %-42s %-18s\n' "ovh"   "ovh/ovh + hashicorp/aws (S3)"          "providers/ovh/"
         echo "  ─────────────────────────────────────────────────────────────────────"
+        echo ""
+
+  # --- build ---
+
+  "build:azure:terraform":
+    desc: Build Docker image — Azure, Terraform (run task generate:azure first)
+    cmds:
+      - task: _build:one
+        vars: { CLOUD: azure, ENGINE: terraform }
+
+  "build:azure:opentofu":
+    desc: Build Docker image — Azure, OpenTofu (run task generate:azure first)
+    cmds:
+      - task: _build:one
+        vars: { CLOUD: azure, ENGINE: opentofu }
+
+  "build:aws:terraform":
+    desc: Build Docker image — AWS, Terraform (run task generate:aws first)
+    cmds:
+      - task: _build:one
+        vars: { CLOUD: aws, ENGINE: terraform }
+
+  "build:aws:opentofu":
+    desc: Build Docker image — AWS, OpenTofu (run task generate:aws first)
+    cmds:
+      - task: _build:one
+        vars: { CLOUD: aws, ENGINE: opentofu }
+
+  "build:gcp:terraform":
+    desc: Build Docker image — GCP, Terraform (run task generate:gcp first)
+    cmds:
+      - task: _build:one
+        vars: { CLOUD: gcp, ENGINE: terraform }
+
+  "build:gcp:opentofu":
+    desc: Build Docker image — GCP, OpenTofu (run task generate:gcp first)
+    cmds:
+      - task: _build:one
+        vars: { CLOUD: gcp, ENGINE: opentofu }
+
+  "build:oci:terraform":
+    desc: Build Docker image — OCI, Terraform (run task generate:oci first)
+    cmds:
+      - task: _build:one
+        vars: { CLOUD: oci, ENGINE: terraform }
+
+  "build:oci:opentofu":
+    desc: Build Docker image — OCI, OpenTofu (run task generate:oci first)
+    cmds:
+      - task: _build:one
+        vars: { CLOUD: oci, ENGINE: opentofu }
+
+  "build:ovh:terraform":
+    desc: Build Docker image — OVH, Terraform (run task generate:ovh first)
+    cmds:
+      - task: _build:one
+        vars: { CLOUD: ovh, ENGINE: terraform }
+
+  "build:ovh:opentofu":
+    desc: Build Docker image — OVH, OpenTofu (run task generate:ovh first)
+    cmds:
+      - task: _build:one
+        vars: { CLOUD: ovh, ENGINE: opentofu }
+
+  "build:all":
+    desc: Generate all providers then build all ten Docker images in parallel
+    cmds:
+      - task: generate:all
+      - task: _build:images
+      - |
+        echo ""
+        printf '  %-9s %-12s %-28s\n' "Cloud" "Engine" "Image"
+        echo "  ─────────────────────────────────────────────────────"
+        printf '  %-9s %-12s %-28s\n' "azure" "terraform" "grauss-azure-terraform"
+        printf '  %-9s %-12s %-28s\n' "azure" "opentofu"  "grauss-azure-opentofu"
+        printf '  %-9s %-12s %-28s\n' "aws"   "terraform" "grauss-aws-terraform"
+        printf '  %-9s %-12s %-28s\n' "aws"   "opentofu"  "grauss-aws-opentofu"
+        printf '  %-9s %-12s %-28s\n' "gcp"   "terraform" "grauss-gcp-terraform"
+        printf '  %-9s %-12s %-28s\n' "gcp"   "opentofu"  "grauss-gcp-opentofu"
+        printf '  %-9s %-12s %-28s\n' "oci"   "terraform" "grauss-oci-terraform"
+        printf '  %-9s %-12s %-28s\n' "oci"   "opentofu"  "grauss-oci-opentofu"
+        printf '  %-9s %-12s %-28s\n' "ovh"   "terraform" "grauss-ovh-terraform"
+        printf '  %-9s %-12s %-28s\n' "ovh"   "opentofu"  "grauss-ovh-opentofu"
+        echo "  ─────────────────────────────────────────────────────"
         echo ""

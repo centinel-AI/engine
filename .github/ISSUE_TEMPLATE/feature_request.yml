@@ -61,8 +61,7 @@ body:
         - New or extended Terraform / OpenTofu resources (`providers/`)
         - JSON data conventions or samples (data repository)
         - Docker / Compose / images
-        - Workspace scripts (`task workspace:*`, `scripts/`)
-        - Codegen (`scripts/codegen.py`, `generate:*`)
+        - Codegen (`scripts/codegen.py`, `task generate:*`)
         - Documentation
         - Something else
     validations:

@@ -16,7 +16,7 @@ if [[ -f /app/workspace/.iac_engine_bin ]]; then
 elif [[ -d "$REPO_ROOT/workspace" ]] && [[ "$(pwd -P)" == "$(cd "$REPO_ROOT/workspace" && pwd -P)" ]]; then
   MODULE_DIR="$REPO_ROOT/workspace"
   if [[ ! -f "$MODULE_DIR/.grauss_provider" ]]; then
-    echo "sync-backend-config: missing workspace/.grauss_provider — run task workspace:<cloud>" >&2
+    echo "sync-backend-config: workspace layout not recognized" >&2
     exit 1
   fi
   PROVIDER="$(tr -d '\n\r' < "$MODULE_DIR/.grauss_provider")"

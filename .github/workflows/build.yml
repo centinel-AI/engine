@@ -128,9 +128,6 @@ jobs:
           key: codegen-${{ matrix.cloud }}-${{ hashFiles('.env.example') }}
           restore-keys: codegen-${{ matrix.cloud }}-
 
-      - name: Initialize environment
-        run: task env:init
-
       - name: Generate providers
         run: task generate:${{ matrix.cloud }}
 

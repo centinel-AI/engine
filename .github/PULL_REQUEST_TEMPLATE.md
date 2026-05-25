@@ -24,7 +24,7 @@
 
 - [ ] Branch follows naming: `feat/<resource>`, `fix/<description>`, or `docs/<description>`
 - [ ] `terraform fmt -check` passes on changed files
-- [ ] `terraform validate` passes (`task workspace:<cloud>` → `terraform validate`)
+- [ ] `terraform fmt -check` passes on changed files under `providers/`
 - [ ] No Terraform modules introduced — only native constructs (`for_each`, `try()`, expressions)
 - [ ] `try()` used for optional JSON fields (no `lookup()` or `optional()`)
 - [ ] Resource label is `grauss`; all identifiers use `snake_case`

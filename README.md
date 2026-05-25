@@ -61,33 +61,18 @@ Pins live in `.env.example`. Update a pin → `task generate:<cloud>` → rebuil
 ## Quick start
 
 ```bash
-# 0. Clone the data repository next to the engine (or set ENGINE_DATA_REPO_PATH in .env)
-git clone git@github.com:centinel-AI/data.git ../data
+# Optional: copy .env.example → .env (also done automatically on first generate/build)
+cp .env.example .env
 
-# 1. Initialize .env (then edit credentials and ENGINE_DATA_REPO_PATH if needed)
-task env:init
-
-# 2. Generate provider templates
+# 1. Generate provider templates from pinned schema versions
 task generate:azure    # or: aws | gcp | oci | ovh | all
 
-# 3. Build images
+# 2. Build Docker images
 task build:azure:terraform
-task build:all         # all eight
-
-# 4. Run
-task run:azure                           # plan with the project in .env
-task run:azure PROJECT=networking        # override project
-task run:aws -- terraform apply          # explicit command
-task run:gcp:opentofu -- tofu destroy
+task build:all         # generate:all + all ten images (5 clouds × terraform | opentofu)
 ```
 
-Without Docker — populate `workspace/` and run the engine binary directly:
-
-```bash
-task workspace:azure:terraform PROJECT=project-01
-terraform -chdir=workspace init
-terraform -chdir=workspace plan
-```
+Version pins live in `.env.example`. Project JSON is maintained in the separate [data repository](https://github.com/centinel-AI/data) and mounted at run time via `ENGINE_DATA_REPO_PATH`.
 
 ## Adding resource types
 

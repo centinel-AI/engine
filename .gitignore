@@ -1,7 +1,7 @@
 # Local environment — contains credentials, never commit
 .env
 
-# Generated workspace — populated by task workspace:<cloud>
+# Generated workspace — optional local mirror for manual validation (gitignored)
 workspace/*
 !workspace/.gitkeep
 

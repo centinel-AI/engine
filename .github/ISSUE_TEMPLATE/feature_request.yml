@@ -59,7 +59,7 @@ body:
       description: Where does this change live?
       options:
         - New or extended Terraform / OpenTofu resources (`providers/`)
-        - JSON data conventions or samples (`data/`)
+        - JSON data conventions or samples (data repository)
         - Docker / Compose / images
         - Workspace scripts (`task workspace:*`, `scripts/`)
         - Codegen (`scripts/codegen.py`, `generate:*`)

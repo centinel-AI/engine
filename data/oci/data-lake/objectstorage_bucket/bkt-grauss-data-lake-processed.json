@@ -1,6 +1,0 @@
-{
-  "name": "bkt-grauss-data-lake-processed",
-  "compartment_id": "ocid1.compartment.oc1..aaaaaaaaREPLACE_WITH_COMPARTMENT_OCID",
-  "namespace": "REPLACE_WITH_OCI_NAMESPACE",
-  "storage_tier": "Standard"
-}

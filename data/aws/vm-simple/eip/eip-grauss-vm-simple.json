@@ -1,8 +1,0 @@
-{
-  "name": "eip-grauss-vm-simple",
-  "domain": "vpc",
-  "instance": "REPLACE_WITH_INSTANCE_ID",
-  "tags": {
-    "Name": "eip-grauss-vm-simple"
-  }
-}

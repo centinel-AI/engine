@@ -1,9 +1,0 @@
-{
-  "name": "fw-allow-http-grauss-web-app",
-  "network": "vpc-grauss-web-app",
-  "allow": [
-    {"protocol": "tcp", "ports": ["80", "443"]}
-  ],
-  "source_ranges": ["0.0.0.0/0"],
-  "target_tags": null
-}

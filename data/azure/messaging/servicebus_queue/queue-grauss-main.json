@@ -1,7 +1,0 @@
-{
-  "name": "queue-grauss-main",
-  "namespace_id": "REPLACE_WITH_SERVICEBUS_NAMESPACE_ID",
-  "max_size_in_megabytes": 1024,
-  "max_delivery_count": 10,
-  "lock_duration": "PT1M"
-}

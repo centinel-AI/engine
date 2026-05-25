@@ -1,6 +1,0 @@
-{
-  "name": "kube-grauss-kubernetes",
-  "region": "GRA9",
-  "version": "1.31",
-  "private_network_id": "REPLACE_WITH_NETWORK_ID"
-}

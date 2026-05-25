@@ -1,7 +1,0 @@
-{
-  "name": "stream-grauss-messaging",
-  "partitions": 1,
-  "compartment_id": "ocid1.compartment.oc1..aaaaaaaaREPLACE_WITH_COMPARTMENT_OCID",
-  "stream_pool_id": "REPLACE_WITH_STREAM_POOL_OCID",
-  "retention_in_hours": 24
-}

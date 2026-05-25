@@ -1,7 +1,0 @@
-{
-  "name": "igw-grauss-networking",
-  "vpc_id": "REPLACE_WITH_VPC_ID",
-  "tags": {
-    "Name": "igw-grauss-networking"
-  }
-}

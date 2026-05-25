@@ -1,7 +1,0 @@
-{
-  "name": "ds-grauss-data-lake",
-  "dataset_id": "grauss_data_lake",
-  "location": "EU",
-  "description": "Grauss data lake dataset",
-  "delete_contents_on_destroy": true
-}

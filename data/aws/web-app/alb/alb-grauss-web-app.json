@@ -1,8 +1,0 @@
-{
-  "name": "alb-grauss-web-app",
-  "load_balancer_type": "application",
-  "subnets": ["REPLACE_WITH_SUBNET_A_ID", "REPLACE_WITH_SUBNET_B_ID"],
-  "security_groups": ["REPLACE_WITH_ALB_SG_ID"],
-  "internal": null,
-  "tags": null
-}

@@ -1,7 +1,0 @@
-{
-  "name": "vnet-grauss-vm-simple",
-  "location": "westeurope",
-  "resource_group_name": "rg-grauss-vm-simple",
-  "address_space": ["10.1.0.0/16"],
-  "tags": null
-}

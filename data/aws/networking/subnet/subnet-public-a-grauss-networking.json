@@ -1,7 +1,0 @@
-{
-  "name": "subnet-public-a-grauss-networking",
-  "vpc_id": "REPLACE_WITH_VPC_ID",
-  "cidr_block": "10.0.1.0/24",
-  "availability_zone": "eu-west-1a",
-  "map_public_ip_on_launch": true
-}

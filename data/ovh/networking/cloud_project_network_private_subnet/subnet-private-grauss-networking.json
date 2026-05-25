@@ -1,9 +1,0 @@
-{
-  "network_id": "REPLACE_WITH_NETWORK_ID",
-  "region": "GRA9",
-  "start": "10.0.2.1",
-  "end": "10.0.2.254",
-  "network": "10.0.0.0/16",
-  "dhcp": true,
-  "no_gateway": true
-}

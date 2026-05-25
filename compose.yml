@@ -6,7 +6,7 @@
 
 x-engine-data-volume: &engine_data_volume
   type: bind
-  source: ./data
+  source: ${ENGINE_DATA_REPO_PATH:-../data}
   target: /app/workspace/data
 
 x-build-args-common: &build_args_common

@@ -1,6 +1,6 @@
 # Grauss
 
-Terraform / OpenTofu engine packaged as Docker images — one per cloud × engine combination. Each image contains a complete set of resource templates generated from the pinned provider schema. You bring credentials and JSON data files.
+Terraform / OpenTofu engine packaged as Docker images — one per cloud × engine combination. Each image contains a complete set of resource templates generated from the pinned provider schema. You bring credentials and JSON data files from a **separate data repository**.
 
 ## Images
 
@@ -19,20 +19,19 @@ Azure covers AzureRM + AzureAD as a single stack. OVH bundles ovh/ovh + hashicor
 ```
 provider schema ──▶ scripts/codegen.py ──▶ providers/<cloud>/*.tf ──▶ Docker image
                                                                            │
-                    data/<cloud>/<project>/*.json ─────────────────────────▶ plan / apply
+         <data-repo>/<cloud>/<project>/*.json (ENGINE_DATA_REPO_PATH) ─────▶ plan / apply
 ```
 
-Resource templates are generated from the provider schema and baked into the image. Your JSON files drive `for_each` — no `.tf` changes needed to add or remove resource instances.
+Resource templates are generated from the provider schema and baked into the image. JSON files from the data repository drive `for_each` — no `.tf` changes needed to add or remove resource instances.
 
 ```
 providers/<cloud>/          generated .tf templates  (gitignored)
-data/<cloud>/<project>/     one JSON file per resource instance
-  └─ <resource_type>/
-       └─ <name>.json
+<data-repo>/                JSON inputs (separate git repository; default ../data)
+  └─ <cloud>/<project>/     one JSON file per resource instance
 workspace/                  local mirror of the container module  (gitignored)
 scripts/                    codegen and tooling
 Dockerfile                  parameterized by CLOUD_PROVIDER and ENGINE
-compose.yml                 eight pre-configured services
+compose.yml                 ten pre-configured services
 ```
 
 ## Versions
@@ -62,7 +61,10 @@ Pins live in `.env.example`. Update a pin → `task generate:<cloud>` → rebuil
 ## Quick start
 
 ```bash
-# 1. Initialize .env (then edit credentials)
+# 0. Clone the data repository next to the engine (or set ENGINE_DATA_REPO_PATH in .env)
+git clone git@github.com:centinel-AI/data.git ../data
+
+# 1. Initialize .env (then edit credentials and ENGINE_DATA_REPO_PATH if needed)
 task env:init
 
 # 2. Generate provider templates
@@ -87,13 +89,13 @@ terraform -chdir=workspace init
 terraform -chdir=workspace plan
 ```
 
-## Adding resources
-
-**New instance** — drop a JSON file under `data/<cloud>/<project>/<resource_type>/`. Picked up automatically via `for_each`, no template changes needed.
+## Adding resource types
 
 **New resource type** — run `task generate:<cloud>` to regenerate templates, then rebuild the image.
 
 **Provider version bump** — update the pin in `.env.example`, run `task generate:<cloud>`, rebuild.
+
+JSON instances and project layout are maintained in the [data repository](https://github.com/centinel-AI/data).
 
 ## Contributing
 
@@ -103,5 +105,5 @@ terraform -chdir=workspace plan
 
 | | |
 |--|--|
-| [docs/projects.md](docs/projects.md) | `data/` layout, `_bootstrap`, the six reference architectures and their resources per cloud |
 | [docs/tasks.md](docs/tasks.md) | Full `task` reference |
+| [centinel-AI/data](https://github.com/centinel-AI/data) | JSON projects, reference architectures, `_bootstrap` |

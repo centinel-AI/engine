@@ -1,9 +1,0 @@
-{
-  "name": "fw-allow-ssh-grauss-networking",
-  "network": "vpc-grauss-networking",
-  "allow": [
-    {"protocol": "tcp", "ports": ["22"]}
-  ],
-  "source_ranges": ["0.0.0.0/0"],
-  "target_tags": ["allow-ssh"]
-}

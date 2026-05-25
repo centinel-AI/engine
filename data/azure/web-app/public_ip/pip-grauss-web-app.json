@@ -1,8 +1,0 @@
-{
-  "name": "pip-grauss-web-app",
-  "location": "westeurope",
-  "resource_group_name": "rg-grauss-web-app",
-  "allocation_method": "Static",
-  "sku": "Standard",
-  "tags": null
-}

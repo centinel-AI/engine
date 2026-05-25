@@ -1,7 +1,0 @@
-{
-  "name": "subnet-grauss-kubernetes",
-  "network": "vpc-grauss-kubernetes",
-  "ip_cidr_range": "10.3.1.0/24",
-  "region": "europe-west1",
-  "private_ip_google_access": null
-}

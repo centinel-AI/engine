@@ -106,7 +106,7 @@ variable "project" {
 locals {
   data_project_root = fileexists("\${path.module}/.iac_engine_bin") ? (
     try(length(fileset("\${path.module}/data/$cloud", "**")) >= 0, false) ? "\${path.module}/data/$cloud/\${var.project}" : "\${path.module}/data"
-  ) : abspath("\${path.module}/../../data/$cloud/\${var.project}")
+  ) : abspath("\${path.module}/../../../data/$cloud/\${var.project}")
 
   json_files = try(fileset(local.data_project_root, "**/*.json"), [])
 
@@ -280,7 +280,7 @@ variable "ovh_s3_secret_key" {
 locals {
   data_project_root = fileexists("\${path.module}/.iac_engine_bin") ? (
     try(length(fileset("\${path.module}/data/ovh", "**")) >= 0, false) ? "\${path.module}/data/ovh/\${var.project}" : "\${path.module}/data"
-  ) : abspath("\${path.module}/../../data/ovh/\${var.project}")
+  ) : abspath("\${path.module}/../../../data/ovh/\${var.project}")
 
   json_files = try(fileset(local.data_project_root, "**/*.json"), [])
 

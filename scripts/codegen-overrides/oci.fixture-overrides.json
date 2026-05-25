@@ -1,9 +1,0 @@
-{
-  "compartment_id": "ocid1.compartment.oc1..aaaaaaaaabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz12",
-  "tenancy_id": "ocid1.tenancy.oc1..aaaaaaaaabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz12",
-  "availability_domain": "aaaa:EU-FRANKFURT-1-AD-1",
-  "region": "eu-frankfurt-1",
-  "cidr_block": "10.0.0.0/16",
-  "cidr_blocks": ["10.0.0.0/16"],
-  "protocol": "all"
-}

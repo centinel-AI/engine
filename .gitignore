@@ -20,8 +20,5 @@ providers/ovh/*
 # Codegen cache (terraform init + schema dump)
 tmp/
 
-# Generated test fixtures — populated by task generate:fixtures:<cloud>
-data/*/_test-all/
-
 # macOS
 .DS_Store

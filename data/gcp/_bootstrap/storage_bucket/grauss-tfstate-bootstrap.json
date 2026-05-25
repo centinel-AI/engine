@@ -1,7 +1,0 @@
-{
-  "name": "grauss-tfstate-bootstrap",
-  "location": "EU",
-  "project_id": "replace-with-your-gcp-project-id",
-  "project": null,
-  "forceDestroy": false
-}

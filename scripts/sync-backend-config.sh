@@ -1,17 +1,12 @@
 #!/usr/bin/env bash
-# Copies data/<provider>/<project>/backend.tf.json → <module>/backend.remote.tf.json
+# Copies <ENGINE_DATA_REPO>/<provider>/<project>/backend.tf.json → <module>/backend.remote.tf.json
 # provider: Docker uses ENGINE_PROVIDER (image ENV); local workspace uses .grauss_provider; repo-root sync uses ENGINE_PROVIDER=azure|aws|gcp|oci.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-
-if [[ -f "$REPO_ROOT/.env" ]]; then
-  set -a
-  # shellcheck disable=SC1091
-  source "$REPO_ROOT/.env"
-  set +a
-fi
+# shellcheck disable=SC1091
+source "$REPO_ROOT/scripts/resolve-data-repo.sh"
 
 PROJECT="${TF_VAR_project:-${ENGINE_TF_VAR_project:-project-01}}"
 
@@ -46,7 +41,7 @@ if [[ "$MODULE_DIR" == "/app/workspace" ]]; then
 elif [[ "$MODULE_DIR" == "$REPO_ROOT/workspace" ]]; then
   SRC="$MODULE_DIR/data/backend.tf.json"
 else
-  SRC="$REPO_ROOT/data/$PROVIDER/$PROJECT/backend.tf.json"
+  SRC="$ENGINE_DATA_REPO/$PROVIDER/$PROJECT/backend.tf.json"
 fi
 DST="$MODULE_DIR/backend.remote.tf.json"
 

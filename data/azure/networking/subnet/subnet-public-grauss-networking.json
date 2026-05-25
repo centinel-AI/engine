@@ -1,7 +1,0 @@
-{
-  "name": "subnet-public-grauss-networking",
-  "resource_group_name": "rg-grauss-networking",
-  "virtual_network_name": "vnet-grauss-networking",
-  "address_prefixes": ["10.0.1.0/24"],
-  "delegation": null
-}

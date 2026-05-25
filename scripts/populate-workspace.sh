@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # Populate ./workspace like /app/workspace in the Docker image for the given cloud (azure | aws | gcp | oci).
-# Optional second argument (or env PROJECT): copies data/<provider>/<PROJECT>/* → workspace/data/ (flat; not workspace/data/<provider>/<PROJECT>).
+# Optional second argument (or env PROJECT): copies <ENGINE_DATA_REPO>/<provider>/<PROJECT>/* → workspace/data/ (flat; not workspace/data/<provider>/<PROJECT>).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck disable=SC1091
+source "$ROOT/scripts/resolve-data-repo.sh"
 PROVIDER="${1:?usage: populate-workspace.sh <azure|aws|gcp|oci|ovh> [PROJECT]}"
 case "$PROVIDER" in azure|aws|gcp|oci|ovh) ;; *)
   echo "populate-workspace.sh: provider must be azure, aws, gcp, oci, or ovh" >&2
@@ -34,7 +36,7 @@ if [[ -z "$PROJECT" ]]; then
   PROJECT="${TF_VAR_project:-${ENGINE_TF_VAR_project:-project-01}}"
 fi
 
-DATA_SRC="$ROOT/data/$PROVIDER/$PROJECT"
+DATA_SRC="$ENGINE_DATA_REPO/$PROVIDER/$PROJECT"
 DATA_DST="$DST/data"
 
 mkdir -p "$DST"

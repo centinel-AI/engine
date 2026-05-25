@@ -7,7 +7,7 @@
 <!-- Check all that apply. -->
 
 - [ ] New resource type (`providers/<cloud>/`)
-- [ ] Fix — template or data correction
+- [ ] Fix — template correction
 - [ ] Codegen / `scripts/` change
 - [ ] Dockerfile / Compose / Taskfile
 - [ ] Documentation
@@ -29,6 +29,5 @@
 - [ ] `try()` used for optional JSON fields (no `lookup()` or `optional()`)
 - [ ] Resource label is `grauss`; all identifiers use `snake_case`
 - [ ] Each `.tf` file contains exactly one resource block; no hardcoded values
-- [ ] JSON data follows `data/<cloud>/<project>/<resource_type>/<instance-name>.json` layout
 - [ ] `.cursor/rules/` updated if a convention was added or changed
 - [ ] `providers/` changes are generated (not hand-edited); `.gitkeep` is the only tracked file per directory

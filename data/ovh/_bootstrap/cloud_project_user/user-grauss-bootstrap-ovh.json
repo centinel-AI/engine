@@ -1,4 +1,0 @@
-{
-  "description": "Grauss bootstrap user for S3-compatible state backend access",
-  "role_names": ["objectstore_operator"]
-}

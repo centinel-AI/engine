@@ -37,12 +37,6 @@ tasks:
       - docker compose build --no-cache engine-{{.CLOUD}}-{{.ENGINE}}
       - printf '\n  %-10s grauss-{{.CLOUD}}-{{.ENGINE}}\n\n' "Image:"
 
-  _generate:fixtures:
-    internal: true
-    deps: [env:init]
-    cmds:
-      - bash scripts/generate-test-fixtures.sh {{.CLOUD}}
-
   # --- workspace ---
 
   "workspace:azure":
@@ -63,11 +57,6 @@ tasks:
       - task: _workspace
         vars: { CLOUD: azure, ENGINE: opentofu, PROJECT: "{{.PROJECT}}" }
 
-  "workspace:azure:data":
-    desc: "Copy data/azure/<PROJECT>/ → workspace/data/ without re-populating providers"
-    cmds:
-      - bash scripts/sync-workspace-data.sh azure '{{.PROJECT}}'
-
   "workspace:aws":
     desc: "Populate workspace for AWS with Terraform (shorthand for workspace:aws:terraform)"
     cmds:
@@ -85,11 +74,6 @@ tasks:
     cmds:
       - task: _workspace
         vars: { CLOUD: aws, ENGINE: opentofu, PROJECT: "{{.PROJECT}}" }
-
-  "workspace:aws:data":
-    desc: "Copy data/aws/<PROJECT>/ → workspace/data/ without re-populating providers"
-    cmds:
-      - bash scripts/sync-workspace-data.sh aws '{{.PROJECT}}'
 
   "workspace:gcp":
     desc: "Populate workspace for GCP with Terraform (shorthand for workspace:gcp:terraform)"
@@ -109,11 +93,6 @@ tasks:
       - task: _workspace
         vars: { CLOUD: gcp, ENGINE: opentofu, PROJECT: "{{.PROJECT}}" }
 
-  "workspace:gcp:data":
-    desc: "Copy data/gcp/<PROJECT>/ → workspace/data/ without re-populating providers"
-    cmds:
-      - bash scripts/sync-workspace-data.sh gcp '{{.PROJECT}}'
-
   "workspace:oci":
     desc: "Populate workspace for OCI with Terraform (shorthand for workspace:oci:terraform)"
     cmds:
@@ -131,11 +110,6 @@ tasks:
     cmds:
       - task: _workspace
         vars: { CLOUD: oci, ENGINE: opentofu, PROJECT: "{{.PROJECT}}" }
-
-  "workspace:oci:data":
-    desc: "Copy data/oci/<PROJECT>/ → workspace/data/ without re-populating providers"
-    cmds:
-      - bash scripts/sync-workspace-data.sh oci '{{.PROJECT}}'
 
   "workspace:ovh":
     desc: "Populate workspace for OVH with Terraform (shorthand for workspace:ovh:terraform)"
@@ -155,15 +129,10 @@ tasks:
       - task: _workspace
         vars: { CLOUD: ovh, ENGINE: opentofu, PROJECT: "{{.PROJECT}}" }
 
-  "workspace:ovh:data":
-    desc: "Copy data/ovh/<PROJECT>/ → workspace/data/ without re-populating providers"
-    cmds:
-      - bash scripts/sync-workspace-data.sh ovh '{{.PROJECT}}'
-
   # --- clean ---
 
   clean:
-    desc: "Strip providers/* and workspace/ to .gitkeep; remove tmp/ and data/*/_test-all/"
+    desc: "Strip providers/* and workspace/ to .gitkeep; remove tmp/"
     cmds:
       - bash scripts/clean.sh
 
@@ -424,85 +393,3 @@ tasks:
         printf '  %-9s %-42s %-18s\n' "ovh"   "ovh/ovh + hashicorp/aws (S3)"          "providers/ovh/"
         echo "  ─────────────────────────────────────────────────────────────────────"
         echo ""
-
-  "generate:fixtures:azure":
-    desc: "Generate minimal test fixtures for every Azure resource type into data/azure/_test-all/ (requires schema from generate:azure)"
-    cmds:
-      - task: _generate:fixtures
-        vars: { CLOUD: azure }
-
-  "generate:fixtures:aws":
-    desc: "Generate minimal test fixtures for every AWS resource type into data/aws/_test-all/ (requires schema from generate:aws)"
-    cmds:
-      - task: _generate:fixtures
-        vars: { CLOUD: aws }
-
-  "generate:fixtures:gcp":
-    desc: "Generate minimal test fixtures for every GCP resource type into data/gcp/_test-all/ (requires schema from generate:gcp)"
-    cmds:
-      - task: _generate:fixtures
-        vars: { CLOUD: gcp }
-
-  "generate:fixtures:oci":
-    desc: "Generate minimal test fixtures for every OCI resource type into data/oci/_test-all/ (requires schema from generate:oci)"
-    cmds:
-      - task: _generate:fixtures
-        vars: { CLOUD: oci }
-
-  "generate:fixtures:ovh":
-    desc: "Generate minimal test fixtures for every OVH resource type into data/ovh/_test-all/ (requires schema from generate:ovh)"
-    cmds:
-      - task: _generate:fixtures
-        vars: { CLOUD: ovh }
-
-  "generate:fixtures:all":
-    desc: Generate fixtures for all clouds
-    deps:
-      - task: "generate:fixtures:azure"
-      - task: "generate:fixtures:aws"
-      - task: "generate:fixtures:gcp"
-      - task: "generate:fixtures:oci"
-      - task: "generate:fixtures:ovh"
-
-  # --- test ---
-  #
-  # Terratest plan against every generated resource type (requires cloud credentials).
-
-  "test:plan:azure":
-    desc: "Terratest plan tests for every Azure resource type (skips if ENGINE_ARM_* not set)"
-    deps: [env:init, "generate:fixtures:azure"]
-    cmds:
-      - bash scripts/run-terratest.sh azure exhaustive
-
-  "test:plan:aws":
-    desc: "Terratest plan tests for every AWS resource type (skips if ENGINE_AWS_* not set)"
-    deps: [env:init, "generate:fixtures:aws"]
-    cmds:
-      - bash scripts/run-terratest.sh aws exhaustive
-
-  "test:plan:gcp":
-    desc: "Terratest plan tests for every GCP resource type (skips if ENGINE_GOOGLE_* not set)"
-    deps: [env:init, "generate:fixtures:gcp"]
-    cmds:
-      - bash scripts/run-terratest.sh gcp exhaustive
-
-  "test:plan:oci":
-    desc: "Terratest plan tests for every OCI resource type (skips if ENGINE_OCI_* not set)"
-    deps: [env:init, "generate:fixtures:oci"]
-    cmds:
-      - bash scripts/run-terratest.sh oci exhaustive
-
-  "test:plan:ovh":
-    desc: "Terratest plan tests for every OVH resource type (skips if ENGINE_OVH_* not set)"
-    deps: [env:init, "generate:fixtures:ovh"]
-    cmds:
-      - bash scripts/run-terratest.sh ovh exhaustive
-
-  "test:plan:all":
-    desc: Terratest plan tests for every resource type across all clouds
-    deps:
-      - task: "test:plan:azure"
-      - task: "test:plan:aws"
-      - task: "test:plan:gcp"
-      - task: "test:plan:oci"
-      - task: "test:plan:ovh"
